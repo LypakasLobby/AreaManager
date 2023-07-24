@@ -15,7 +15,7 @@ group = 'com.lypaka'
 version = '1.16.5-1.0.0'
 
 java {
-    archivesBaseName = 'BetterAreas'
+    archivesBaseName = 'AreaManager'
     toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
 
@@ -49,7 +49,7 @@ minecraft {
 
 
             mods {
-                betterareas {
+                areamanager {
                     source sourceSets.main
                 }
             }
@@ -64,7 +64,7 @@ minecraft {
 
 
             mods {
-                betterareas {
+                areamanager {
                     source sourceSets.main
                 }
             }
@@ -86,10 +86,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'betterareas', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'areamanager', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                betterareas {
+                areamanager {
                     source sourceSets.main
                 }
             }
@@ -115,9 +115,9 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
-    compileOnly fileTree(dir: 'C:\\Users\\Ryan\\Documents\\GitHub\\LIBRARIES', include: ['LypakaUtils-1.16.5-0.0.6-Java8.jar'])
-    compileOnly fileTree(dir: 'C:\\Users\\Ryan\\Documents\\GitHub\\LIBRARIES', include: ['Reforged-1.16.jar'])
-    compileOnly fileTree(dir: 'C:\\Users\\Ryan\\Documents\\GitHub\\LIBRARIES', include: ['GooeyLibs-1.16.5-2.3.2.jar'])
+    compileOnly fileTree(dir: 'C:\\Users\\ryan9\\Documents\\GitHub\\LIBRARIES', include: ['LypakaUtils-1.16.5.jar'])
+    compileOnly fileTree(dir: 'C:\\Users\\ryan9\\Documents\\GitHub\\LIBRARIES', include: ['Reforged.jar'])
+    compileOnly fileTree(dir: 'C:\\Users\\ryan9\\Documents\\GitHub\\LIBRARIES', include: ['GooeyLibs-1.16.5.jar'])
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
@@ -136,12 +136,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "betterareas",
-                //"Specification-Vendor": "betterareas authors",
+                "Specification-Title"     : "areamanager",
+                //"Specification-Vendor": "areamanager authors",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                //"Implementation-Vendor": "betterareas authors",
+                //"Implementation-Vendor": "areamanager authors",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
