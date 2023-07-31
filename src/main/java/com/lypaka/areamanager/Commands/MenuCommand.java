@@ -11,7 +11,7 @@ public class MenuCommand {
 
     public MenuCommand (CommandDispatcher<CommandSource> dispatcher) {
 
-        for (String a : BetterAreasCommand.ALIASES) {
+        for (String a : AreaManagerCommand.ALIASES) {
 
             dispatcher.register(
                     Commands.literal(a)

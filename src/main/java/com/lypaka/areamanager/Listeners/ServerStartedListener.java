@@ -46,7 +46,6 @@ public class ServerStartedListener {
                     public void run() {
 
                         PixelmonSpawning.coordinator.deactivate();
-                        PixelmonSpawning.coordinator = null;
 
                     }
 

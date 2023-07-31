@@ -28,7 +28,7 @@ public class ReloadCommand {
 
     public ReloadCommand (CommandDispatcher<CommandSource> dispatcher) {
 
-        for (String a : BetterAreasCommand.ALIASES) {
+        for (String a : AreaManagerCommand.ALIASES) {
 
             dispatcher.register(
                     Commands.literal(a)
@@ -92,7 +92,6 @@ public class ReloadCommand {
                                                                     public void run() {
 
                                                                         PixelmonSpawning.coordinator.deactivate();
-                                                                        PixelmonSpawning.coordinator = null;
 
                                                                     }
 
