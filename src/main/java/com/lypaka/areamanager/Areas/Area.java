@@ -1,9 +1,6 @@
 package com.lypaka.areamanager.Areas;
 
-import com.lypaka.areamanager.Areas.SpawnerSettings.FishSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.HeadbuttSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.NaturalSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.RockSmashSpawnerSettings;
+import com.lypaka.areamanager.Areas.SpawnerSettings.*;
 
 public class Area {
 
@@ -23,17 +20,19 @@ public class Area {
     private final boolean preventSwimming;
     private final AreaPermissions permissions;
     private final FishSpawnerSettings fishSpawnerSettings;
+    private final GrassSpawnerSettings grassSpawnerSettings;
     private final HeadbuttSpawnerSettings headbuttSpawnerSettings;
     private final NaturalSpawnerSettings naturalSpawnerSettings;
     private final RockSmashSpawnerSettings rockSmashSpawnerSettings;
+    private final SurfSpawnerSettings surfSpawnerSettings;
     private final int priority;
     private final int radius;
     private final int underground;
 
     public Area (String name, String displayName, int maxX, int maxY, int maxZ, int minX, int minY, int minZ, String worldName, String enterMessage, String leaveMessage,
                  String plainName, boolean cancelConcussions, boolean preventSwimming, AreaPermissions permissions, FishSpawnerSettings fishSpawnerSettings,
-                 HeadbuttSpawnerSettings headbuttSpawnerSettings, NaturalSpawnerSettings naturalSpawnerSettings, RockSmashSpawnerSettings rockSmashSpawnerSettings, int priority,
-                 int radius, int underground) {
+                 GrassSpawnerSettings grassSpawnerSettings, HeadbuttSpawnerSettings headbuttSpawnerSettings, NaturalSpawnerSettings naturalSpawnerSettings,
+                 RockSmashSpawnerSettings rockSmashSpawnerSettings, SurfSpawnerSettings surfSpawnerSettings, int priority, int radius, int underground) {
 
         this.name = name;
         this.displayName = displayName;
@@ -51,9 +50,11 @@ public class Area {
         this.preventSwimming = preventSwimming;
         this.permissions = permissions;
         this.fishSpawnerSettings = fishSpawnerSettings;
+        this.grassSpawnerSettings = grassSpawnerSettings;
         this.headbuttSpawnerSettings = headbuttSpawnerSettings;
         this.naturalSpawnerSettings = naturalSpawnerSettings;
         this.rockSmashSpawnerSettings = rockSmashSpawnerSettings;
+        this.surfSpawnerSettings = surfSpawnerSettings;
         this.priority = priority;
         this.radius = radius;
         this.underground = underground;
@@ -162,6 +163,12 @@ public class Area {
 
     }
 
+    public GrassSpawnerSettings getGrassSpawnerSettings() {
+
+        return this.grassSpawnerSettings;
+
+    }
+
     public HeadbuttSpawnerSettings getHeadbuttSpawnerSettings() {
 
         return this.headbuttSpawnerSettings;
@@ -177,6 +184,12 @@ public class Area {
     public RockSmashSpawnerSettings getRockSmashSpawnerSettings() {
 
         return this.rockSmashSpawnerSettings;
+
+    }
+
+    public SurfSpawnerSettings getSurfSpawnerSettings() {
+
+        return this.surfSpawnerSettings;
 
     }
 

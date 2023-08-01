@@ -1,10 +1,7 @@
 package com.lypaka.areamanager.Areas;
 
 import com.google.common.reflect.TypeToken;
-import com.lypaka.areamanager.Areas.SpawnerSettings.FishSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.HeadbuttSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.NaturalSpawnerSettings;
-import com.lypaka.areamanager.Areas.SpawnerSettings.RockSmashSpawnerSettings;
+import com.lypaka.areamanager.Areas.SpawnerSettings.*;
 import com.lypaka.areamanager.Areas.Spawns.*;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.ConfigGetters;
@@ -64,6 +61,12 @@ public class AreaHandler {
             int fishDespawnTimer = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Fish-Spawner", "Despawn-Timer").getInt();
             FishSpawnerSettings fishSpawnerSettings = new FishSpawnerSettings(clearFishSpawns, despawnAfterFishBattle, fishDespawnTimer);
 
+            boolean autoGrassBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Auto-Battle").getBoolean();
+            List<String> blockIDs = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Block-IDs").getList(TypeToken.of(String.class));
+            boolean despawnAfterGrassBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Despawn-After-Battle").getBoolean();
+            double grassSpawnChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Spawn-Attempt-Chance").getDouble();
+            GrassSpawnerSettings grassSpawnerSettings = new GrassSpawnerSettings(autoGrassBattle, blockIDs, despawnAfterGrassBattle, grassSpawnChance);
+
             double headbuttAutoBattleChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Headbutt-Spawner", "Auto-Battle-Chance").getDouble();
             boolean clearHeadbuttSpawns = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Headbutt-Spawner", "Clear-Spawns").getBoolean();
             int headbuttCooldown = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Headbutt-Spawner", "Cooldown").getInt();
@@ -98,8 +101,15 @@ public class AreaHandler {
             RockSmashSpawnerSettings rockSmashSpawnerSettings = new RockSmashSpawnerSettings(rockSmashAutoBattleChance, clearRockSmashSpawns, rockSmashCooldown, customRockSmashIDs,
                     despawnRockSmashAfterBattle, rockSmashDespawnTimer, reduceRockSmashPP, requireRockSmashMove, usePixelmonsRockSmashSystem);
 
+            boolean autoSurfBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Auto-Battle").getBoolean();
+            List<String> surfBlockIDs = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Block-IDs").getList(TypeToken.of(String.class));
+            boolean despawnAfterSurfBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Despawn-After-Battle").getBoolean();
+            double surfSpawnChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Spawn-Attempt-Chance").getDouble();
+            SurfSpawnerSettings surfSpawnerSettings = new SurfSpawnerSettings(autoSurfBattle, surfBlockIDs, despawnAfterSurfBattle, surfSpawnChance);
+
             Area a = new Area(area, displayName, maxX, maxY, maxZ, minX, minY, minZ, worldName, enterMessage, leaveMessage, plainName, cancelsConcussions, preventSwimming,
-                    permissions, fishSpawnerSettings, headbuttSpawnerSettings, naturalSpawnerSettings, rockSmashSpawnerSettings, priority, radius, underground);
+                    permissions, fishSpawnerSettings, grassSpawnerSettings, headbuttSpawnerSettings, naturalSpawnerSettings, rockSmashSpawnerSettings, surfSpawnerSettings,
+                    priority, radius, underground);
             a.create();
 
             AreaManager.areaConfigManager.put(area, bcm);
@@ -118,6 +128,23 @@ public class AreaHandler {
 
                 FishSpawn fishSpawn = new FishSpawn(species, form, minLevel, maxLevel, spawnData);
                 fishSpawnsList.add(fishSpawn);
+
+            }
+
+            List<String> grassSpawns = bcm.getConfigNode(0, "Grass-Spawns").getList(TypeToken.of(String.class));
+            ComplexConfigManager gcm = new ComplexConfigManager(grassSpawns, "grass-spawns", "grassSpawnTemplate.conf", dir, AreaManager.class, AreaManager.MOD_NAME, AreaManager.MOD_ID, AreaManager.logger);
+            gcm.init();
+            List<GrassSpawn> grassSpawnsList = new ArrayList<>();
+            for (int i = 0; i < grassSpawns.size(); i++) {
+
+                String species = gcm.getConfigNode(i, "Pokemon-Data", "Species").getString();
+                String form = gcm.getConfigNode(i, "Pokemon-Data", "Form").getString();
+                int minLevel = gcm.getConfigNode(i, "Pokemon-Data", "Min-Level").getInt();
+                int maxLevel = gcm.getConfigNode(i, "Pokemon-Data", "Max-Level").getInt();
+                Map<String, Map<String, Map<String, String>>> spawnData = gcm.getConfigNode(i, "Spawn-Data").getValue(new TypeToken<Map<String, Map<String, Map<String, String>>>>() {});
+
+                GrassSpawn grassSpawn = new GrassSpawn(species, form, minLevel, maxLevel, spawnData);
+                grassSpawnsList.add(grassSpawn);
 
             }
 
@@ -172,7 +199,24 @@ public class AreaHandler {
 
             }
 
-            AreaSpawns spawns = new AreaSpawns(a, fishSpawnsList, headbuttSpawnsList, naturalSpawnsList, rockSmashSpawnsList);
+            List<String> surfSpawns = bcm.getConfigNode(0, "Surf-Spawns").getList(TypeToken.of(String.class));
+            ComplexConfigManager scm = new ComplexConfigManager(surfSpawns, "surf-spawns", "surfSpawnTemplate.conf", dir, AreaManager.class, AreaManager.MOD_NAME, AreaManager.MOD_ID, AreaManager.logger);
+            scm.init();
+            List<SurfSpawn> surfSpawnsList = new ArrayList<>();
+            for (int i = 0; i < surfSpawns.size(); i++) {
+
+                String species = scm.getConfigNode(i, "Pokemon-Data", "Species").getString();
+                String form = scm.getConfigNode(i, "Pokemon-Data", "Form").getString();
+                int minLevel = scm.getConfigNode(i, "Pokemon-Data", "Min-Level").getInt();
+                int maxLevel = scm.getConfigNode(i, "Pokemon-Data", "Max-Level").getInt();
+                Map<String, Map<String, Map<String, String>>> spawnData = scm.getConfigNode(i, "Spawn-Data").getValue(new TypeToken<Map<String, Map<String, Map<String, String>>>>() {});
+
+                SurfSpawn surfSpawn = new SurfSpawn(species, form, minLevel, maxLevel, spawnData);
+                surfSpawnsList.add(surfSpawn);
+
+            }
+
+            AreaSpawns spawns = new AreaSpawns(a, fishSpawnsList, grassSpawnsList, headbuttSpawnsList, naturalSpawnsList, rockSmashSpawnsList, surfSpawnsList);
             areaSpawnMap.put(a, spawns);
 
         }
