@@ -862,4 +862,290 @@ public class SpawnBuilder {
 
     }
 
+    public static Map<Pokemon, PokemonSpawn> getPokemonGrassSpawnInfo (String time, String weather, String location, AreaSpawns spawns) {
+
+        List<GrassSpawn> grassSpawns = spawns.getGrassSpawns();
+        Map<Pokemon, PokemonSpawn> pokemonMap = new HashMap<>();
+        if (grassSpawns.size() == 0) return pokemonMap;
+        for (GrassSpawn g : grassSpawns) {
+
+            Map<String, Map<String, Map<String, String>>> spawnData = g.getSpawnData();
+            Map<String, Map<String, String>> innerData;
+            if (spawnData.containsKey(time)) {
+
+                innerData = spawnData.get(time);
+
+            } else if (spawnData.containsKey("Any")) {
+
+                innerData = spawnData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            Map<String, String> data;
+            if (innerData.containsKey(weather)) {
+
+                data = innerData.get(weather);
+
+            } else if (innerData.containsKey("Any")) {
+
+                data = innerData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            String locationTypes = data.get("Spawn-Location");
+            boolean canSpawnHere = false;
+            if (locationTypes.contains(", ")) {
+
+                String[] split = locationTypes.split(", ");
+                for (String l : split) {
+
+                    if (l.equalsIgnoreCase(location)) {
+
+                        canSpawnHere = true;
+                        break;
+
+                    }
+
+                }
+
+            } else {
+
+                canSpawnHere = location.equalsIgnoreCase(locationTypes);
+
+            }
+
+            if (!canSpawnHere) continue;
+
+            int level = RandomHelper.getRandomNumberBetween(g.getMinLevel(), g.getMaxLevel());
+            Pokemon pokemon = PokemonBuilder.builder().species(g.getSpecies()).level(level).build();
+            if (!g.getForm().equalsIgnoreCase("")) {
+
+                pokemon.setForm(g.getForm());
+
+            }
+
+            pokemonMap.put(pokemon, g);
+
+        }
+
+        return pokemonMap;
+
+    }
+
+    public static Map<Pokemon, Double> buildGrassSpawnsList (String time, String weather, String location, AreaSpawns spawns, double modifier) {
+
+        List<GrassSpawn> grassSpawns = spawns.getGrassSpawns();
+        Map<Pokemon, Double> pokemonMap = new HashMap<>();
+        if (grassSpawns.size() == 0) return pokemonMap;
+        Map<GrassSpawn, Map<String, String>> m1 = new HashMap<>();
+        Map<Double, GrassSpawn> m2 = new HashMap<>();
+        for (GrassSpawn g : grassSpawns) {
+
+            Map<String, Map<String, Map<String, String>>> spawnData = g.getSpawnData();
+            Map<String, Map<String, String>> innerData;
+            if (spawnData.containsKey(time)) {
+
+                innerData = spawnData.get(time);
+
+            } else if (spawnData.containsKey("Any")) {
+
+                innerData = spawnData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            Map<String, String> data;
+            if (innerData.containsKey(weather)) {
+
+                data = innerData.get(weather);
+
+            } else if (innerData.containsKey("Any")) {
+
+                data = innerData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            String locationTypes = data.get("Spawn-Location");
+            boolean canSpawnHere = false;
+            if (locationTypes.contains(", ")) {
+
+                String[] split = locationTypes.split(", ");
+                for (String l : split) {
+
+                    if (l.equalsIgnoreCase(location)) {
+
+                        canSpawnHere = true;
+                        break;
+
+                    }
+
+                }
+
+            } else {
+
+                canSpawnHere = location.equalsIgnoreCase(locationTypes);
+
+            }
+
+            if (!canSpawnHere) continue;
+
+
+            double spawnChance = Double.parseDouble(data.get("Spawn-Chance"));
+            m1.put(g, data);
+            m2.put(spawnChance * modifier, g);
+
+        }
+
+        List<Double> chances = new ArrayList<>(m2.keySet());
+        Collections.sort(chances);
+
+        for (int i = chances.size() - 1; i >= 0; i--) {
+
+            if (RandomHelper.getRandomChance(chances.get(i))) {
+
+                GrassSpawn spawn = m2.get(chances.get(i));
+                int level = RandomHelper.getRandomNumberBetween(spawn.getMinLevel(), spawn.getMaxLevel());
+                Pokemon pokemon = PokemonBuilder.builder().species(spawn.getSpecies()).level(level).build();
+                if (!spawn.getForm().equalsIgnoreCase("")) {
+
+                    pokemon.setForm(spawn.getForm());
+
+                }
+
+                pokemonMap.put(pokemon, chances.get(i));
+
+            }
+
+        }
+
+        return pokemonMap;
+
+    }
+
+    public static Map<Pokemon, PokemonSpawn> getPokemonSurfSpawnInfo (String time, String weather, AreaSpawns spawns) {
+
+        List<SurfSpawn> surfSpawns = spawns.getSurfSpawns();
+        Map<Pokemon, PokemonSpawn> pokemonMap = new HashMap<>();
+        if (surfSpawns.size() == 0) return pokemonMap;
+        for (SurfSpawn s : surfSpawns) {
+
+            Map<String, Map<String, Map<String, String>>> spawnData = s.getSpawnData();
+            Map<String, Map<String, String>> innerData;
+            if (spawnData.containsKey(time)) {
+
+                innerData = spawnData.get(time);
+
+            } else if (spawnData.containsKey("Any")) {
+
+                innerData = spawnData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            int level = RandomHelper.getRandomNumberBetween(s.getMinLevel(), s.getMaxLevel());
+            Pokemon pokemon = PokemonBuilder.builder().species(s.getSpecies()).level(level).build();
+            if (!s.getForm().equalsIgnoreCase("")) {
+
+                pokemon.setForm(s.getForm());
+
+            }
+
+            pokemonMap.put(pokemon, s);
+
+        }
+
+        return pokemonMap;
+
+    }
+
+    public static Map<Pokemon, Double> buildSurfSpawnsList (String time, String weather, AreaSpawns spawns, double modifier) {
+
+        List<SurfSpawn> surfSpawns = spawns.getSurfSpawns();
+        Map<Pokemon, Double> pokemonMap = new HashMap<>();
+        if (surfSpawns.size() == 0) return pokemonMap;
+        Map<SurfSpawn, Map<String, String>> m1 = new HashMap<>();
+        Map<Double, SurfSpawn> m2 = new HashMap<>();
+        for (SurfSpawn s : surfSpawns) {
+
+            Map<String, Map<String, Map<String, String>>> spawnData = s.getSpawnData();
+            Map<String, Map<String, String>> innerData;
+            if (spawnData.containsKey(time)) {
+
+                innerData = spawnData.get(time);
+
+            } else if (spawnData.containsKey("Any")) {
+
+                innerData = spawnData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            Map<String, String> data;
+            if (innerData.containsKey(weather)) {
+
+                data = innerData.get(weather);
+
+            } else if (innerData.containsKey("Any")) {
+
+                data = innerData.get("Any");
+
+            } else {
+
+                continue;
+
+            }
+
+            double spawnChance = Double.parseDouble(data.get("Spawn-Chance"));
+            m1.put(s, data);
+            m2.put(spawnChance * modifier, s);
+
+        }
+
+        List<Double> chances = new ArrayList<>(m2.keySet());
+        Collections.sort(chances);
+
+        for (int i = chances.size() - 1; i >= 0; i--) {
+
+            if (RandomHelper.getRandomChance(chances.get(i))) {
+
+                SurfSpawn spawn = m2.get(chances.get(i));
+                int level = RandomHelper.getRandomNumberBetween(spawn.getMinLevel(), spawn.getMaxLevel());
+                Pokemon pokemon = PokemonBuilder.builder().species(spawn.getSpecies()).level(level).build();
+                if (!spawn.getForm().equalsIgnoreCase("")) {
+
+                    pokemon.setForm(spawn.getForm());
+
+                }
+
+                pokemonMap.put(pokemon, chances.get(i));
+
+            }
+
+        }
+
+        return pokemonMap;
+
+    }
+
 }

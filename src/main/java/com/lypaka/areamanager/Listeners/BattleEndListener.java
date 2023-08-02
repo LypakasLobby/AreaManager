@@ -2,10 +2,7 @@ package com.lypaka.areamanager.Listeners;
 
 import com.lypaka.areamanager.Areas.Area;
 import com.lypaka.areamanager.Areas.AreaHandler;
-import com.lypaka.areamanager.Spawners.FishSpawner;
-import com.lypaka.areamanager.Spawners.HeadbuttSpawner;
-import com.lypaka.areamanager.Spawners.NaturalSpawner;
-import com.lypaka.areamanager.Spawners.RockSmashSpawner;
+import com.lypaka.areamanager.Spawners.*;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
 import com.pixelmonmod.pixelmon.battles.controller.BattleController;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
@@ -55,6 +52,10 @@ public class BattleEndListener {
 
             spawner = "Fish";
 
+        } else if (GrassSpawner.spawnedPokemonUUIDs.contains(pixelmon.getUniqueID())) {
+
+            spawner = "Grass";
+
         } else if (HeadbuttSpawner.spawnedPokemonUUIDs.contains(pixelmon.getUniqueID())) {
 
             spawner = "Headbutt";
@@ -66,6 +67,10 @@ public class BattleEndListener {
         } else if (RockSmashSpawner.spawnedPokemonUUIDs.contains(pixelmon.getUniqueID())) {
 
             spawner = "RockSmash";
+
+        } else if (SurfSpawner.spawnedPokemonUUIDs.contains(pixelmon.getUniqueID())) {
+
+            spawner = "Surf";
 
         }
         if (spawner == null) return;
@@ -93,6 +98,28 @@ public class BattleEndListener {
 
                 }
                 break;
+
+            case "Grass":
+                if (currentArea.getGrassSpawnerSettings().doesDespawnAfterBattle()) {
+
+                    GrassSpawner.spawnedPokemonUUIDs.removeIf(entry -> {
+
+                        if (entry.toString().equalsIgnoreCase(pixelmon.getUniqueID().toString())) {
+
+                            if (pixelmon.battleController == null) {
+
+                                pixelmon.remove();
+
+                            }
+                            return true;
+
+                        }
+
+                        return false;
+
+                    });
+
+                }
 
             case "Headbutt":
                 if (currentArea.getHeadbuttSpawnerSettings().doesDespawnAfterBattle()) {
@@ -144,6 +171,29 @@ public class BattleEndListener {
                 if (currentArea.getRockSmashSpawnerSettings().doesDespawnAfterBattle()) {
 
                     RockSmashSpawner.spawnedPokemonUUIDs.removeIf(entry -> {
+
+                        if (entry.toString().equalsIgnoreCase(pixelmon.getUniqueID().toString())) {
+
+                            if (pixelmon.battleController == null) {
+
+                                pixelmon.remove();
+
+                            }
+                            return true;
+
+                        }
+
+                        return false;
+
+                    });
+
+                }
+                break;
+
+            case "Surf":
+                if (currentArea.getSurfSpawnerSettings().doesDespawnAfterBattle()) {
+
+                    SurfSpawner.spawnedPokemonUUIDs.removeIf(entry -> {
 
                         if (entry.toString().equalsIgnoreCase(pixelmon.getUniqueID().toString())) {
 

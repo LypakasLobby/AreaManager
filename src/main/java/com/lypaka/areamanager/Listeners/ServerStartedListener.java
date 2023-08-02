@@ -2,10 +2,7 @@ package com.lypaka.areamanager.Listeners;
 
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.ConfigGetters;
-import com.lypaka.areamanager.Spawners.FishSpawner;
-import com.lypaka.areamanager.Spawners.HeadbuttSpawner;
-import com.lypaka.areamanager.Spawners.NaturalSpawner;
-import com.lypaka.areamanager.Spawners.RockSmashSpawner;
+import com.lypaka.areamanager.Spawners.*;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.spawning.PixelmonSpawning;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,6 +26,8 @@ public class ServerStartedListener {
             modActive = true;
             MinecraftForge.EVENT_BUS.register(new MovementListener());
             MinecraftForge.EVENT_BUS.register(new RespawnListener());
+            MinecraftForge.EVENT_BUS.register(new GrassSpawner());
+            MinecraftForge.EVENT_BUS.register(new SurfSpawner());
             Pixelmon.EVENT_BUS.register(new BattleEndListener());
             Pixelmon.EVENT_BUS.register(new FishSpawner());
             Pixelmon.EVENT_BUS.register(new HeadbuttSpawner());

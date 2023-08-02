@@ -14,6 +14,7 @@ public class Intimidate {
 
     public static Pokemon tryIntimidate (Pokemon wildPokemon, Pokemon playerPokemon) {
 
+        if (wildPokemon == null) return null;
         int level = playerPokemon.getPokemonLevel();
         int spawnLevel = wildPokemon.getPokemonLevel();
         if (level > spawnLevel) {

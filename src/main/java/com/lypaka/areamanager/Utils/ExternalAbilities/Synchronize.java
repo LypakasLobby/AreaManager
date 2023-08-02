@@ -13,6 +13,7 @@ public class Synchronize {
 
     public static void applySynchronize (Pokemon wildPokemon, Pokemon playersPokemon) {
 
+        if (wildPokemon == null) return;
         wildPokemon.setNature(playersPokemon.getNature());
 
     }

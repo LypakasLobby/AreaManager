@@ -64,8 +64,9 @@ public class AreaHandler {
             boolean autoGrassBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Auto-Battle").getBoolean();
             List<String> blockIDs = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Block-IDs").getList(TypeToken.of(String.class));
             boolean despawnAfterGrassBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Despawn-After-Battle").getBoolean();
+            Map<String, String> grassMessages = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Messages").getValue(new TypeToken<Map<String, String>>() {});
             double grassSpawnChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Grass-Spawner", "Spawn-Attempt-Chance").getDouble();
-            GrassSpawnerSettings grassSpawnerSettings = new GrassSpawnerSettings(autoGrassBattle, blockIDs, despawnAfterGrassBattle, grassSpawnChance);
+            GrassSpawnerSettings grassSpawnerSettings = new GrassSpawnerSettings(autoGrassBattle, blockIDs, despawnAfterGrassBattle, grassMessages, grassSpawnChance);
 
             double headbuttAutoBattleChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Headbutt-Spawner", "Auto-Battle-Chance").getDouble();
             boolean clearHeadbuttSpawns = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Headbutt-Spawner", "Clear-Spawns").getBoolean();
@@ -104,8 +105,9 @@ public class AreaHandler {
             boolean autoSurfBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Auto-Battle").getBoolean();
             List<String> surfBlockIDs = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Block-IDs").getList(TypeToken.of(String.class));
             boolean despawnAfterSurfBattle = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Despawn-After-Battle").getBoolean();
+            Map<String, String> surfMessages = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Messages").getValue(new TypeToken<Map<String, String>>() {});
             double surfSpawnChance = bcm.getConfigNode(0, "General-Settings", "Spawner-Settings", "Surf-Spawner", "Spawn-Attempt-Chance").getDouble();
-            SurfSpawnerSettings surfSpawnerSettings = new SurfSpawnerSettings(autoSurfBattle, surfBlockIDs, despawnAfterSurfBattle, surfSpawnChance);
+            SurfSpawnerSettings surfSpawnerSettings = new SurfSpawnerSettings(autoSurfBattle, surfBlockIDs, despawnAfterSurfBattle, surfMessages, surfSpawnChance);
 
             Area a = new Area(area, displayName, maxX, maxY, maxZ, minX, minY, minZ, worldName, enterMessage, leaveMessage, plainName, cancelsConcussions, preventSwimming,
                     permissions, fishSpawnerSettings, grassSpawnerSettings, headbuttSpawnerSettings, naturalSpawnerSettings, rockSmashSpawnerSettings, surfSpawnerSettings,
