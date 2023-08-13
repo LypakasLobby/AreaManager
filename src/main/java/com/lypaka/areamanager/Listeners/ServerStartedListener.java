@@ -17,6 +17,7 @@ import java.util.TimerTask;
 public class ServerStartedListener {
 
     public static boolean modActive = false;
+    public static boolean defaultSpawnerActive = true;
 
     @SubscribeEvent
     public static void onServerStarted (FMLServerStartedEvent event) {
@@ -38,6 +39,7 @@ public class ServerStartedListener {
 
             if (ConfigGetters.disablePixelmonsSpawner) {
 
+                defaultSpawnerActive = false;
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
 

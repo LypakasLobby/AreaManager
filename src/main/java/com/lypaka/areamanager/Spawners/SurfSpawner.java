@@ -37,178 +37,178 @@ public class SurfSpawner {
     public static List<UUID> spawnedPokemonUUIDs = new ArrayList<>(); // used for battle end event listener to check for to despawn Pokemon or not
 
     @SubscribeEvent
-    public void onGrassMove (PlayerMovementEvent.Swim event) {
+    public void onWaterMove (PlayerMovementEvent.Swim event) {
 
         ServerPlayerEntity player = event.getPlayer();
-        int x = player.getPosition().getX();
-        int y = player.getPosition().getY();
-        int z = player.getPosition().getZ();
-        World world = player.world;
-        List<Area> areas = AreaHandler.getSortedAreas(x, y, z, world);
-        if (areas.size() == 0) return;
+        if (!player.isCreative() && !player.isSpectator()) {
 
-        String time = "Night";
-        List<WorldTime> times = WorldTime.getCurrent(world);
-        for (WorldTime t : times) {
+            int x = player.getPosition().getX();
+            int y = player.getPosition().getY();
+            int z = player.getPosition().getZ();
+            World world = player.world;
+            List<Area> areas = AreaHandler.getSortedAreas(x, y, z, world);
+            if (areas.size() == 0) return;
 
-            if (t.name().contains("day") || t.name().contains("dawn") || t.name().contains("morning") || t.name().contains("afternoon")) {
+            String time = "Night";
+            List<WorldTime> times = WorldTime.getCurrent(world);
+            for (WorldTime t : times) {
 
-                time = "Day";
-                break;
+                if (t.name().contains("day") || t.name().contains("dawn") || t.name().contains("morning") || t.name().contains("afternoon")) {
+
+                    time = "Day";
+                    break;
+
+                }
+
+            }
+            String weather = "Clear";
+            if (world.isRaining()) {
+
+                weather = "Rain";
+
+            } else if (world.isThundering()) {
+
+                weather = "Storm";
+
+            }
+            String location = "land";
+            Pokemon toSpawn = null;
+            Pokemon playersPokemon = null;
+            PlayerPartyStorage party = StorageProxy.getParty(player);
+            for (int i = 0; i < 6; i++) {
+
+                Pokemon p = party.get(i);
+                if (p != null) {
+
+                    playersPokemon = p;
+                    break;
+
+                }
+
+            }
+            List<Area> sortedAreas = AreaHandler.getSortedAreas(x, y, z, world);
+            double modifier = 1.0;
+            if (ArenaTrap.applies(playersPokemon) || Illuminate.applies(playersPokemon) || NoGuard.applies(playersPokemon)) {
+
+                modifier = 2.0;
+
+            } else if (Infiltrator.applies(playersPokemon) || QuickFeet.applies(playersPokemon) || Stench.applies(playersPokemon) || WhiteSmoke.applies(playersPokemon)) {
+
+                modifier = 0.5;
 
             }
 
-        }
-        String weather = "Clear";
-        if (world.isRaining()) {
+            String blockID = world.getBlockState(player.getPosition()).getBlock().getRegistryName().toString();
+            if (blockID.equalsIgnoreCase("air")) location = "air";
+            if (blockID.contains("water") || blockID.contains("lava")) location = "water";
+            for (int i = 0; i < sortedAreas.size(); i++) {
 
-            weather = "Rain";
+                Area currentArea = sortedAreas.get(i);
+                if (currentArea.getSurfSpawnerSettings().getBlockIDs().contains(blockID)) {
 
-        } else if (world.isThundering()) {
+                    if (currentArea.getSurfSpawnerSettings().doesAutoBattle() && BattleRegistry.getBattle(player) != null) break;
+                    AreaSpawns spawns = AreaHandler.areaSpawnMap.get(currentArea);
+                    if (spawns.getSurfSpawns().size() > 0) {
 
-            weather = "Storm";
+                        Map<Pokemon, Double> pokemon = SpawnBuilder.buildSurfSpawnsList(time, weather, spawns, modifier);
+                        Map<Pokemon, PokemonSpawn> spawnInfoMap = SpawnBuilder.getPokemonSurfSpawnInfo(time, weather, spawns);
+                        for (Map.Entry<Pokemon, Double> p : pokemon.entrySet()) {
 
-        }
-        String location = "land";
-        Pokemon toSpawn = null;
-        Pokemon playersPokemon = null;
-        PlayerPartyStorage party = StorageProxy.getParty(player);
-        for (int i = 0; i < 6; i++) {
+                            if (toSpawn == null) {
 
-            Pokemon p = party.get(i);
-            if (p != null) {
+                                if (RandomHelper.getRandomChance(p.getValue())) {
 
-                playersPokemon = p;
-                break;
-
-            }
-
-        }
-        List<Area> sortedAreas = AreaHandler.getSortedAreas(x, y, z, world);
-        double modifier = 1.0;
-        if (ArenaTrap.applies(playersPokemon) || Illuminate.applies(playersPokemon) || NoGuard.applies(playersPokemon)) {
-
-            modifier = 2.0;
-
-        } else if (Infiltrator.applies(playersPokemon) || QuickFeet.applies(playersPokemon) || Stench.applies(playersPokemon) || WhiteSmoke.applies(playersPokemon)) {
-
-            modifier = 0.5;
-
-        }
-
-        String blockID = world.getBlockState(player.getPosition()).getBlock().getRegistryName().toString();
-        if (blockID.equalsIgnoreCase("air")) location = "air";
-        if (blockID.contains("water") || blockID.contains("lava")) location = "water";
-        for (int i = 0; i < sortedAreas.size(); i++) {
-
-            Area currentArea = sortedAreas.get(i);
-            if (currentArea.getSurfSpawnerSettings().getBlockIDs().contains(blockID)) {
-
-                if (currentArea.getSurfSpawnerSettings().doesAutoBattle() && BattleRegistry.getBattle(player) != null) break;
-                AreaSpawns spawns = AreaHandler.areaSpawnMap.get(currentArea);
-                if (spawns.getGrassSpawns().size() > 0) {
-
-                    Map<Pokemon, Double> pokemon = SpawnBuilder.buildGrassSpawnsList(time, weather, location, spawns, modifier);
-                    Map<Pokemon, PokemonSpawn> spawnInfoMap = SpawnBuilder.getPokemonGrassSpawnInfo(time, weather, location, spawns);
-                    for (Map.Entry<Pokemon, Double> p : pokemon.entrySet()) {
-
-                        if (toSpawn == null) {
-
-                            if (RandomHelper.getRandomChance(p.getValue())) {
-
-                                toSpawn = p.getKey();
-                                break;
-
-                            }
-
-                        }
-
-                    }
-                    AreaSurfSpawnEvent surfSpawnEvent = new AreaSurfSpawnEvent(player, currentArea, toSpawn);
-                    MinecraftForge.EVENT_BUS.post(surfSpawnEvent);
-                    if (!surfSpawnEvent.isCanceled()) {
-
-                        if (Intimidate.applies(playersPokemon) || KeenEye.applies(playersPokemon)) {
-
-                            toSpawn = Intimidate.tryIntimidate(toSpawn, playersPokemon);
-                            if (toSpawn == null) continue;
-
-                        }
-                        if (FlashFire.applies(playersPokemon)) {
-
-                            toSpawn = FlashFire.tryFlashFire(toSpawn, pokemon);
-
-                        } else if (Harvest.applies(playersPokemon)) {
-
-                            toSpawn = Harvest.tryHarvest(toSpawn, pokemon);
-
-                        } else if (LightningRod.applies(playersPokemon) || Static.applies(playersPokemon)) {
-
-                            toSpawn = LightningRod.tryLightningRod(toSpawn, pokemon);
-
-                        } else if (MagnetPull.applies(playersPokemon)) {
-
-                            toSpawn = MagnetPull.tryMagnetPull(toSpawn, pokemon);
-
-                        } else if (StormDrain.applies(playersPokemon)) {
-
-                            toSpawn = StormDrain.tryStormDrain(toSpawn, pokemon);
-
-                        }
-
-                        if (CuteCharm.applies(playersPokemon)) {
-
-                            CuteCharm.tryApplyCuteCharmEffect(toSpawn, playersPokemon);
-
-                        } else if (Synchronize.applies(playersPokemon)) {
-
-                            Synchronize.applySynchronize(toSpawn, playersPokemon);
-
-                        }
-
-                        if (toSpawn == null) continue;
-
-                        int level = toSpawn.getPokemonLevel();
-                        if (Hustle.applies(playersPokemon) || Pressure.applies(playersPokemon) || VitalSpirit.applies(playersPokemon)) {
-
-                            level = Hustle.tryHustle(level, spawnInfoMap.get(toSpawn));
-
-                        }
-                        toSpawn.setLevel(level);
-                        toSpawn.setLevelNum(level);
-
-                        HeldItemUtils.tryApplyHeldItem(toSpawn, playersPokemon);
-
-                        int spawnX = player.getPosition().getX();
-                        int spawnY = player.getPosition().getY();
-                        int spawnZ = player.getPosition().getZ();
-
-                        BlockPos spawnPosition = new BlockPos(spawnX, spawnY, spawnZ);
-                        List<Area> areasAtSpawn = AreaHandler.getFromLocation(spawnX, spawnY, spawnZ, player.world);
-                        if (areasAtSpawn.size() == 0) continue;
-                        PixelmonEntity pixelmon = toSpawn.getOrCreatePixelmon(world, spawnX, spawnY + 1.5, spawnZ);
-                        Pokemon finalToSpawn = toSpawn;
-                        player.world.getServer().deferTask(() -> {
-
-                            pixelmon.setSpawnLocation(pixelmon.getDefaultSpawnLocation());
-                            player.world.addEntity(pixelmon);
-                            if (currentArea.getSurfSpawnerSettings().doesDespawnAfterBattle()) {
-
-                                spawnedPokemonUUIDs.add(pixelmon.getUniqueID());
-
-                            }
-                            pixelmon.setPositionAndUpdate(spawnPosition.getX(), spawnPosition.getY() + 1.5, spawnPosition.getZ());
-                            if (currentArea.getSurfSpawnerSettings().doesAutoBattle()) {
-
-                                String messageType = "";
-                                if (finalToSpawn.isShiny()) {
-
-                                    messageType = "-Shiny";
+                                    toSpawn = p.getKey();
+                                    break;
 
                                 }
-                                messageType = "Spawn-Message" + messageType;
-                                if (!player.isCreative() && !player.isSpectator()) {
 
+                            }
+
+                        }
+                        AreaSurfSpawnEvent surfSpawnEvent = new AreaSurfSpawnEvent(player, currentArea, toSpawn);
+                        MinecraftForge.EVENT_BUS.post(surfSpawnEvent);
+                        if (!surfSpawnEvent.isCanceled()) {
+
+                            if (Intimidate.applies(playersPokemon) || KeenEye.applies(playersPokemon)) {
+
+                                toSpawn = Intimidate.tryIntimidate(toSpawn, playersPokemon);
+                                if (toSpawn == null) continue;
+
+                            }
+                            if (FlashFire.applies(playersPokemon)) {
+
+                                toSpawn = FlashFire.tryFlashFire(toSpawn, pokemon);
+
+                            } else if (Harvest.applies(playersPokemon)) {
+
+                                toSpawn = Harvest.tryHarvest(toSpawn, pokemon);
+
+                            } else if (LightningRod.applies(playersPokemon) || Static.applies(playersPokemon)) {
+
+                                toSpawn = LightningRod.tryLightningRod(toSpawn, pokemon);
+
+                            } else if (MagnetPull.applies(playersPokemon)) {
+
+                                toSpawn = MagnetPull.tryMagnetPull(toSpawn, pokemon);
+
+                            } else if (StormDrain.applies(playersPokemon)) {
+
+                                toSpawn = StormDrain.tryStormDrain(toSpawn, pokemon);
+
+                            }
+
+                            if (CuteCharm.applies(playersPokemon)) {
+
+                                CuteCharm.tryApplyCuteCharmEffect(toSpawn, playersPokemon);
+
+                            } else if (Synchronize.applies(playersPokemon)) {
+
+                                Synchronize.applySynchronize(toSpawn, playersPokemon);
+
+                            }
+
+                            if (toSpawn == null) continue;
+
+                            int level = toSpawn.getPokemonLevel();
+                            if (Hustle.applies(playersPokemon) || Pressure.applies(playersPokemon) || VitalSpirit.applies(playersPokemon)) {
+
+                                level = Hustle.tryHustle(level, spawnInfoMap.get(toSpawn));
+
+                            }
+                            toSpawn.setLevel(level);
+                            toSpawn.setLevelNum(level);
+
+                            HeldItemUtils.tryApplyHeldItem(toSpawn, playersPokemon);
+
+                            int spawnX = player.getPosition().getX();
+                            int spawnY = player.getPosition().getY();
+                            int spawnZ = player.getPosition().getZ();
+
+                            BlockPos spawnPosition = new BlockPos(spawnX, spawnY, spawnZ);
+                            List<Area> areasAtSpawn = AreaHandler.getFromLocation(spawnX, spawnY, spawnZ, player.world);
+                            if (areasAtSpawn.size() == 0) continue;
+                            PixelmonEntity pixelmon = toSpawn.getOrCreatePixelmon(world, spawnX, spawnY + 1.5, spawnZ);
+                            Pokemon finalToSpawn = toSpawn;
+                            player.world.getServer().deferTask(() -> {
+
+                                pixelmon.setSpawnLocation(pixelmon.getDefaultSpawnLocation());
+                                player.world.addEntity(pixelmon);
+                                if (currentArea.getSurfSpawnerSettings().doesDespawnAfterBattle()) {
+
+                                    spawnedPokemonUUIDs.add(pixelmon.getUniqueID());
+
+                                }
+                                pixelmon.setPositionAndUpdate(spawnPosition.getX(), spawnPosition.getY() + 1.5, spawnPosition.getZ());
+                                if (currentArea.getSurfSpawnerSettings().doesAutoBattle()) {
+
+                                    String messageType = "";
+                                    if (finalToSpawn.isShiny()) {
+
+                                        messageType = "-Shiny";
+
+                                    }
+                                    messageType = "Spawn-Message" + messageType;
                                     if (BattleRegistry.getBattle(player) == null) {
 
                                         String message = currentArea.getSurfSpawnerSettings().getMessagesMap().get(messageType);
@@ -225,15 +225,15 @@ public class SurfSpawner {
 
                                 }
 
-                            }
+                            });
 
-                        });
+                        }
+
+                    } else {
+
+                        break;
 
                     }
-
-                } else {
-
-                    break;
 
                 }
 

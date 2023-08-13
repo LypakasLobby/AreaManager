@@ -83,19 +83,23 @@ public class ReloadCommand {
 
                                                             NaturalSpawner.startTimer();
 
-                                                            if (ConfigGetters.disablePixelmonsSpawner) {
+                                                            if (ServerStartedListener.defaultSpawnerActive) {
 
-                                                                Timer timer = new Timer();
-                                                                timer.schedule(new TimerTask() {
+                                                                if (ConfigGetters.disablePixelmonsSpawner) {
 
-                                                                    @Override
-                                                                    public void run() {
+                                                                    Timer timer = new Timer();
+                                                                    timer.schedule(new TimerTask() {
 
-                                                                        PixelmonSpawning.coordinator.deactivate();
+                                                                        @Override
+                                                                        public void run() {
 
-                                                                    }
+                                                                            PixelmonSpawning.coordinator.deactivate();
 
-                                                                }, 3000);
+                                                                        }
+
+                                                                    }, 3000);
+
+                                                                }
 
                                                             }
 
