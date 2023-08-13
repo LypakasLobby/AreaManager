@@ -71,7 +71,6 @@ public class SurfSpawner {
                 weather = "Storm";
 
             }
-            String location = "land";
             Pokemon toSpawn = null;
             Pokemon playersPokemon = null;
             PlayerPartyStorage party = StorageProxy.getParty(player);
@@ -99,8 +98,6 @@ public class SurfSpawner {
             }
 
             String blockID = world.getBlockState(player.getPosition()).getBlock().getRegistryName().toString();
-            if (blockID.equalsIgnoreCase("air")) location = "air";
-            if (blockID.contains("water") || blockID.contains("lava")) location = "water";
             for (int i = 0; i < sortedAreas.size(); i++) {
 
                 Area currentArea = sortedAreas.get(i);
