@@ -1,7 +1,6 @@
 package com.lypaka.areamanager;
 
 import com.lypaka.areamanager.Areas.AreaHandler;
-import com.lypaka.areamanager.Utils.HeldItemUtils;
 import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
 import com.lypaka.lypakautils.ConfigurationLoaders.ConfigUtils;
 import net.minecraftforge.fml.common.Mod;
@@ -28,12 +27,11 @@ public class AreaManager {
     public AreaManager() throws IOException, ObjectMappingException {
 
         Path dir = ConfigUtils.checkDir(Paths.get("./config/areamanager"));
-        String[] files = new String[]{"areamanager.conf", "heldItems.conf", "guiSettings.conf"};
+        String[] files = new String[]{"areamanager.conf"};
         configManager = new BasicConfigManager(files, dir, AreaManager.class, MOD_NAME, MOD_ID, logger);
         configManager.init();
         ConfigGetters.load();
         AreaHandler.loadAreas();
-        HeldItemUtils.load();
 
     }
 

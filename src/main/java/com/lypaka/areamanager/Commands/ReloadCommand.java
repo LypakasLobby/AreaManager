@@ -3,12 +3,6 @@ package com.lypaka.areamanager.Commands;
 import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.ConfigGetters;
-import com.lypaka.areamanager.Listeners.*;
-import com.lypaka.areamanager.Spawners.FishSpawner;
-import com.lypaka.areamanager.Spawners.HeadbuttSpawner;
-import com.lypaka.areamanager.Spawners.NaturalSpawner;
-import com.lypaka.areamanager.Spawners.RockSmashSpawner;
-import com.lypaka.areamanager.Utils.HeldItemUtils;
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import com.mojang.brigadier.CommandDispatcher;
@@ -66,53 +60,6 @@ public class ReloadCommand {
                                                     AreaManager.configManager.load();
                                                     ConfigGetters.load();
                                                     AreaHandler.loadAreas();
-                                                    HeldItemUtils.load();
-                                                    if (!ServerStartedListener.modActive) {
-
-                                                        AreaManager.logger.info("Detected the reload of AreaManager with the event listeners disabled, attempting to enable...");
-                                                        if (com.lypaka.lypakautils.ConfigGetters.tickListenerEnabled) {
-
-                                                            ServerStartedListener.modActive = true;
-                                                            MinecraftForge.EVENT_BUS.register(new MovementListener());
-                                                            MinecraftForge.EVENT_BUS.register(new RespawnListener());
-                                                            Pixelmon.EVENT_BUS.register(new BattleEndListener());
-                                                            Pixelmon.EVENT_BUS.register(new FishSpawner());
-                                                            Pixelmon.EVENT_BUS.register(new HeadbuttSpawner());
-                                                            Pixelmon.EVENT_BUS.register(new NaturalPixelmonSpawnListener());
-                                                            Pixelmon.EVENT_BUS.register(new RockSmashSpawner());
-
-                                                            NaturalSpawner.startTimer();
-
-                                                            if (ServerStartedListener.defaultSpawnerActive) {
-
-                                                                if (ConfigGetters.disablePixelmonsSpawner) {
-
-                                                                    Timer timer = new Timer();
-                                                                    timer.schedule(new TimerTask() {
-
-                                                                        @Override
-                                                                        public void run() {
-
-                                                                            PixelmonSpawning.coordinator.deactivate();
-
-                                                                        }
-
-                                                                    }, 3000);
-
-                                                                }
-
-                                                            }
-
-                                                        } else {
-
-                                                            AreaManager.logger.error("WARNING: AreaManager has detected the tick listener in LypakaUtils is disabled!");
-                                                            AreaManager.logger.error("This is not allowed! AreaManager REQUIRES that tick listener be enabled!");
-                                                            AreaManager.logger.error("Please enable that in the LypakaUtils config and then run the reload command for LypakaUtils and then the reload command for AreaManager!");
-
-                                                        }
-
-
-                                                    }
                                                     c.getSource().sendFeedback(FancyText.getFormattedText("&aSuccessfully reloaded AreaManager!"), true);
 
                                                 } catch (ObjectMappingException | IOException e) {

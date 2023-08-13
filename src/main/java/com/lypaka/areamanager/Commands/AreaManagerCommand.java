@@ -17,7 +17,6 @@ public class AreaManagerCommand {
     @SubscribeEvent
     public static void onCommandRegistration (RegisterCommandsEvent event) {
 
-        new MenuCommand(event.getDispatcher());
         new ReloadCommand(event.getDispatcher());
         new WorldCommand(event.getDispatcher());
 
