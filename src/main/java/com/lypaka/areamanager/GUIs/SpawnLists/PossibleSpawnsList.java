@@ -54,6 +54,9 @@ public class PossibleSpawnsList {
                                 configLore.removeIf(e -> e.contains("Rod Types"));
                                 configLore.removeIf(e -> e.contains("Wood Types"));
                                 configLore.removeIf(e -> e.contains("Stone Types"));
+                                configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                                configLore.removeIf(e -> e.contains("Weather"));
+                                configLore.removeIf(e -> e.contains("Location"));
                                 List<String> heldItems = new ArrayList<>();
                                 boolean doHeldItems = false;
                                 for (String s : configLore) {
@@ -163,6 +166,9 @@ public class PossibleSpawnsList {
                                 configLore.removeIf(e -> e.contains("Location"));
                                 configLore.removeIf(e -> e.contains("Wood Types"));
                                 configLore.removeIf(e -> e.contains("Stone Types"));
+                                configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                                configLore.removeIf(e -> e.contains("Weather"));
+                                configLore.removeIf(e -> e.contains("Location"));
                                 List<String> heldItems = new ArrayList<>();
                                 boolean doHeldItems = false;
                                 for (String s : configLore) {
@@ -271,6 +277,9 @@ public class PossibleSpawnsList {
                             configLore.removeIf(e -> e.contains("Location"));
                             configLore.removeIf(e -> e.contains("Rod Types"));
                             configLore.removeIf(e -> e.contains("Stone Types"));
+                            configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                            configLore.removeIf(e -> e.contains("Weather"));
+                            configLore.removeIf(e -> e.contains("Location"));
                             List<String> heldItems = new ArrayList<>();
                             boolean doHeldItems = false;
                             for (String s : configLore) {
@@ -377,6 +386,9 @@ public class PossibleSpawnsList {
                             configLore.removeIf(e -> e.contains("Location"));
                             configLore.removeIf(e -> e.contains("Rod Types"));
                             configLore.removeIf(e -> e.contains("Wood Types"));
+                            configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                            configLore.removeIf(e -> e.contains("Weather"));
+                            configLore.removeIf(e -> e.contains("Location"));
                             List<String> heldItems = new ArrayList<>();
                             boolean doHeldItems = false;
                             for (String s : configLore) {
@@ -483,6 +495,9 @@ public class PossibleSpawnsList {
                                 configLore.removeIf(e -> e.contains("Rod Types"));
                                 configLore.removeIf(e -> e.contains("Wood Types"));
                                 configLore.removeIf(e -> e.contains("Stone Types"));
+                                configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                                configLore.removeIf(e -> e.contains("Weather"));
+                                configLore.removeIf(e -> e.contains("Location"));
                                 List<String> heldItems = new ArrayList<>();
                                 boolean doHeldItems = false;
                                 for (String s : configLore) {
@@ -586,6 +601,9 @@ public class PossibleSpawnsList {
                             configLore.removeIf(e -> e.contains("Rod Types"));
                             configLore.removeIf(e -> e.contains("Wood Types"));
                             configLore.removeIf(e -> e.contains("Stone Types"));
+                            configLore.removeIf(e -> e.contains("Time")); // removing time, weather and location because that information is irrelevent here
+                            configLore.removeIf(e -> e.contains("Weather"));
+                            configLore.removeIf(e -> e.contains("Location"));
                             List<String> heldItems = new ArrayList<>();
                             boolean doHeldItems = false;
                             for (String s : configLore) {

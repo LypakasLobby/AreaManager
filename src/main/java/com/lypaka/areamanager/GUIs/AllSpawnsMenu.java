@@ -51,22 +51,29 @@ public class AllSpawnsMenu {
                 AllSpawnsList.buildNatural(spawns, m1, m2, m3);
 
             }
-
             if (spawns.getFishSpawns().size() > 0) {
 
                 AllSpawnsList.buildFish(spawns, m1, m2, m3);
 
             }
-
             if (spawns.getHeadbuttSpawns().size() > 0) {
 
                 AllSpawnsList.buildHeadbutt(spawns, m1, m2, m3);
 
             }
-
             if (spawns.getRockSmashSpawns().size() > 0) {
 
                 AllSpawnsList.buildRockSmash(spawns, m1, m2, m3);
+
+            }
+            if (spawns.getGrassSpawns().size() > 0) {
+
+                AllSpawnsList.buildGrass(spawns, m1, m2, m3);
+
+            }
+            if (spawns.getSurfSpawns().size() > 0) {
+
+                AllSpawnsList.buildSurf(spawns, m1, m2, m3);
 
             }
 
