@@ -6,17 +6,12 @@ import com.lypaka.areamanager.ConfigGetters;
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import com.mojang.brigadier.CommandDispatcher;
-import com.pixelmonmod.pixelmon.Pixelmon;
-import com.pixelmonmod.pixelmon.spawning.PixelmonSpawning;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.common.MinecraftForge;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ReloadCommand {
 

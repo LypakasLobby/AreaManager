@@ -1,12 +1,14 @@
 package com.lypaka.areamanager.Areas;
 
 import com.google.common.reflect.TypeToken;
+import com.lypaka.areamanager.API.AreasLoadedEvent;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.ConfigGetters;
 import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
 import com.lypaka.lypakautils.ConfigurationLoaders.ConfigUtils;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.ServerWorldInfo;
+import net.minecraftforge.common.MinecraftForge;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
@@ -59,6 +61,9 @@ public class AreaHandler {
             AreaManager.areaConfigManager.put(area, bcm);
 
         }
+
+        AreasLoadedEvent event = new AreasLoadedEvent();
+        MinecraftForge.EVENT_BUS.post(event);
 
     }
 
