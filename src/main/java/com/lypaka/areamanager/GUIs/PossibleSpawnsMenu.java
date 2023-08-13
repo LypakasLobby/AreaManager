@@ -96,6 +96,16 @@ public class PossibleSpawnsMenu {
                 PossibleSpawnsList.buildRockSmash(time, weather, spawns, m1, m2, m3);
 
             }
+            if (spawns.getGrassSpawns().size() > 0) {
+
+                PossibleSpawnsList.buildGrass(time, weather, location, spawns, m1, m2, m3);
+
+            }
+            if (spawns.getSurfSpawns().size() > 0) {
+
+                PossibleSpawnsList.buildSurf(time, weather, spawns, m1, m2, m3);
+
+            }
 
         }
 
