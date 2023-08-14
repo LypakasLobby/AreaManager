@@ -60,6 +60,8 @@ public class AreaHandler {
 
             AreaManager.areaConfigManager.put(area, bcm);
 
+            AreaManager.logger.info("Successfully loaded area: " + area);
+
         }
 
         AreasLoadedEvent event = new AreasLoadedEvent();

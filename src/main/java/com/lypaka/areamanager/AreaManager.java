@@ -31,7 +31,6 @@ public class AreaManager {
         configManager = new BasicConfigManager(files, dir, AreaManager.class, MOD_NAME, MOD_ID, logger);
         configManager.init();
         ConfigGetters.load();
-        AreaHandler.loadAreas();
 
     }
 
