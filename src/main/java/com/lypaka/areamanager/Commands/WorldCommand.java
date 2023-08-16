@@ -2,7 +2,6 @@ package com.lypaka.areamanager.Commands;
 
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
-import com.lypaka.lypakautils.WorldStuff.WorldMap;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;

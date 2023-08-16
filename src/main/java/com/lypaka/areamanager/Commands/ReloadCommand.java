@@ -1,8 +1,9 @@
 package com.lypaka.areamanager.Commands;
 
-import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.AreaManager;
+import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.ConfigGetters;
+import com.lypaka.areamanager.Regions.RegionHandler;
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import com.mojang.brigadier.CommandDispatcher;
@@ -54,7 +55,7 @@ public class ReloadCommand {
 
                                                     AreaManager.configManager.load();
                                                     ConfigGetters.load();
-                                                    AreaHandler.loadAreas();
+                                                    RegionHandler.loadRegions();
                                                     c.getSource().sendFeedback(FancyText.getFormattedText("&aSuccessfully reloaded AreaManager!"), true);
 
                                                 } catch (ObjectMappingException | IOException e) {

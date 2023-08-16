@@ -45,12 +45,6 @@ public class Area {
 
     }
 
-    public void create() {
-
-        AreaHandler.areaMap.put(this.name, this);
-
-    }
-
     public String getName() {
 
         return this.name;
