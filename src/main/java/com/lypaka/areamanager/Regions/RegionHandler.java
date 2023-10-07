@@ -1,13 +1,20 @@
 package com.lypaka.areamanager.Regions;
 
 import com.google.common.reflect.TypeToken;
+import com.lypaka.areamanager.API.AreaEvents.AreaPermissionsEvent;
 import com.lypaka.areamanager.API.FinishedLoadingEvent;
+import com.lypaka.areamanager.API.RegionEvents.RegionEnterEvent;
+import com.lypaka.areamanager.API.RegionEvents.RegionLeaveEvent;
+import com.lypaka.areamanager.API.RegionEvents.RegionPermissionsEvent;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.Areas.Area;
+import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.Areas.AreaPermissions;
 import com.lypaka.areamanager.ConfigGetters;
 import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
 import com.lypaka.lypakautils.ConfigurationLoaders.ConfigUtils;
+import com.lypaka.lypakautils.FancyText;
+import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.storage.ServerWorldInfo;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,7 +28,119 @@ import java.util.*;
 public class RegionHandler {
 
     public static Map<String, Region> regionMap;
+    public static Map<UUID, Region> playersLastKnownRegion = new HashMap<>();
     public static Map<Region, List<UUID>> playersInRegion = new HashMap<>();
+    public static Map<Region, List<Area>> regionAreasMap = new HashMap<>();
+
+    public static void teleportPlayerToRegionFailedToLeaveLocation (ServerPlayerEntity player, Region region) {
+
+        RegionPermissions permissions = region.getPermissions();
+        if (!permissions.getLeaveTeleportLocation().equalsIgnoreCase("x,y,z")) {
+
+            int tpX = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[0]);
+            int tpY = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[1]);
+            int tpZ = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[2]);
+            player.setPositionAndUpdate(tpX, tpY, tpZ);
+            if (!permissions.getLeaveMessage().equals("")) {
+
+                player.sendMessage(FancyText.getFormattedText(permissions.getLeaveMessage()), player.getUniqueID());
+
+            }
+
+        }
+
+    }
+
+    public static void teleportPlayerToRegionFailedToEnterLocation (ServerPlayerEntity player, Region region) {
+
+        RegionPermissions permissions = region.getPermissions();
+        if (!permissions.getEnterTeleportLocation().equalsIgnoreCase("x,y,z")) {
+
+            int tpX = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[0]);
+            int tpY = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[1]);
+            int tpZ = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[2]);
+            player.setPositionAndUpdate(tpX, tpY, tpZ);
+            if (!permissions.getEnterMessage().equals("")) {
+
+                player.sendMessage(FancyText.getFormattedText(permissions.getEnterMessage()), player.getUniqueID());
+
+            }
+
+        }
+
+    }
+
+    public static boolean canPlayerEnterRegion (ServerPlayerEntity player, Region region) {
+
+        RegionPermissions regionPermissions = region.getPermissions();
+        boolean hasPermission = true;
+        for (String p : regionPermissions.getEnterPermissions()) {
+
+            if (!PermissionHandler.hasPermission(player, p)) {
+
+                hasPermission = false;
+                break;
+
+            }
+
+        }
+        RegionPermissionsEvent permissionsEvent = new RegionPermissionsEvent(player, region, regionPermissions);
+        MinecraftForge.EVENT_BUS.post(permissionsEvent);
+        if (permissionsEvent.isCanceled()) hasPermission = true;
+        RegionEnterEvent enterEvent = new RegionEnterEvent(player, region, hasPermission);
+        MinecraftForge.EVENT_BUS.post(enterEvent);
+        if (enterEvent.isCanceled()) hasPermission = false;
+        if (!enterEvent.playerCanEnter()) hasPermission = false;
+
+        return hasPermission;
+
+    }
+
+    public static boolean canPlayerLeaveRegion (ServerPlayerEntity player, Region region) {
+
+        boolean hasPermission = true;
+        RegionPermissions permissions = region.getPermissions();
+        for (String p : permissions.getLeavePermissions()) {
+
+            if (!PermissionHandler.hasPermission(player, p)) {
+
+                hasPermission = false;
+                break;
+
+            }
+
+        }
+        RegionPermissionsEvent permissionsEvent = new RegionPermissionsEvent(player, region, permissions);
+        MinecraftForge.EVENT_BUS.post(permissionsEvent);
+        if (permissionsEvent.isCanceled()) hasPermission = true;
+        RegionLeaveEvent leaveEvent = new RegionLeaveEvent(player, region, hasPermission);
+        MinecraftForge.EVENT_BUS.post(leaveEvent);
+        if (leaveEvent.isCanceled()) hasPermission = false;
+        if (!leaveEvent.playerCanLeave()) hasPermission = false;
+
+        return hasPermission;
+
+    }
+
+    public static void removePlayerFromRegion (ServerPlayerEntity player, Region region) {
+
+        String name = "None";
+        if (region != null) name = region.getName();
+        playersInRegion.get(region).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+    }
+
+    public static void addPlayerToRegion (ServerPlayerEntity player, Region region) {
+
+        String name = "None";
+        if (region != null) name = region.getName();
+        playersLastKnownRegion.put(player.getUniqueID(), region);
+        List<UUID> uuids = new ArrayList<>();
+        if (playersInRegion.containsKey(region)) uuids = playersInRegion.get(region);
+        uuids.add(player.getUniqueID());
+        playersInRegion.put(region, uuids);
+
+    }
 
     public static void loadRegions() throws IOException, ObjectMappingException {
 
@@ -96,6 +215,7 @@ public class RegionHandler {
 
             Region region = new Region(regionName, displayName, maxX, maxY, maxZ, minX, minY, minZ, worldName, regionPermissions, areas);
             region.create();
+            regionAreasMap.put(region, areas);
 
         }
 

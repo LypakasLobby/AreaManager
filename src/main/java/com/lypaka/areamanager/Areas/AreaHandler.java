@@ -1,16 +1,172 @@
 package com.lypaka.areamanager.Areas;
 
+import com.lypaka.areamanager.API.AreaEvents.AreaEnterEvent;
+import com.lypaka.areamanager.API.AreaEvents.AreaLeaveEvent;
+import com.lypaka.areamanager.API.AreaEvents.AreaPermissionsEvent;
 import com.lypaka.areamanager.Regions.Region;
 import com.lypaka.areamanager.Regions.RegionHandler;
+import com.lypaka.lypakautils.FancyText;
+import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.ServerWorldInfo;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;
 
 public class AreaHandler {
 
-    public static Map<Area, List<UUID>> playersInArea = new HashMap<>();
+    public static Map<Region, Map<Area, List<UUID>>> playersInArea = new HashMap<>();
+
+    public static boolean canPlayerEnterArea (ServerPlayerEntity player, Area area) {
+
+        AreaPermissions permissions = area.getPermissions();
+        boolean hasAreaPermission = true;
+        for (String p : permissions.getEnterPermissions()) {
+
+            if (!PermissionHandler.hasPermission(player, p)) {
+
+                hasAreaPermission = false;
+                break;
+
+            }
+
+        }
+        AreaPermissionsEvent areaPermissionsEvent = new AreaPermissionsEvent(player, area, permissions);
+        MinecraftForge.EVENT_BUS.post(areaPermissionsEvent);
+        if (areaPermissionsEvent.isCanceled()) hasAreaPermission = true;
+        AreaEnterEvent areaEnterEvent = new AreaEnterEvent(player, area, hasAreaPermission);
+        MinecraftForge.EVENT_BUS.post(areaEnterEvent);
+        if (areaEnterEvent.isCanceled()) hasAreaPermission = false;
+        if (!areaEnterEvent.playerCanEnter()) hasAreaPermission = false;
+        return hasAreaPermission;
+
+    }
+
+    public static boolean canPlayerLeaveArea (ServerPlayerEntity player, Area area) {
+
+        boolean hasPermission = true;
+        AreaPermissions permissions = area.getPermissions();
+        for (String p : permissions.getLeavePermissions()) {
+
+            if (!PermissionHandler.hasPermission(player, p)) {
+
+                hasPermission = false;
+                break;
+
+            }
+
+        }
+        AreaPermissionsEvent permissionsEvent = new AreaPermissionsEvent(player, area, permissions);
+        MinecraftForge.EVENT_BUS.post(permissionsEvent);
+        if (permissionsEvent.isCanceled()) hasPermission = true;
+        AreaLeaveEvent areaLeaveEvent = new AreaLeaveEvent(player, area, hasPermission);
+        MinecraftForge.EVENT_BUS.post(areaLeaveEvent);
+        if (areaLeaveEvent.isCanceled()) hasPermission = false;
+        if (!areaLeaveEvent.playerCanLeave()) hasPermission = false;
+        return hasPermission;
+
+    }
+
+    public static Area getAreaPlayerCantLeave (ServerPlayerEntity player) {
+
+        Area area = null;
+        boolean hasPermission = true;
+        for (Area a : getAreasAtPlayer(player)) {
+
+            AreaPermissions permissions = a.getPermissions();
+            for (String p : permissions.getLeavePermissions()) {
+
+                if (!PermissionHandler.hasPermission(player, p)) {
+
+                    hasPermission = false;
+                    break;
+
+                }
+
+            }
+            AreaPermissionsEvent permissionsEvent = new AreaPermissionsEvent(player, a, permissions);
+            MinecraftForge.EVENT_BUS.post(permissionsEvent);
+            if (permissionsEvent.isCanceled()) hasPermission = true;
+            if (!hasPermission) {
+
+                area = a;
+                break;
+
+            }
+
+        }
+
+        return area;
+
+    }
+
+    public static void teleportPlayerToAreaFailedToEnterLocation (ServerPlayerEntity player, Area area) {
+
+        AreaPermissions permissions = area.getPermissions();
+        if (!permissions.getEnterTeleportLocation().equalsIgnoreCase("x,y,z")) {
+
+            int tpX = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[0]);
+            int tpY = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[1]);
+            int tpZ = Integer.parseInt(permissions.getEnterTeleportLocation().split(",")[2]);
+            player.setPositionAndUpdate(tpX, tpY, tpZ);
+            if (!permissions.getEnterMessage().equals("")) {
+
+                player.sendMessage(FancyText.getFormattedText(permissions.getEnterMessage()), player.getUniqueID());
+
+            }
+
+        }
+
+    }
+
+    public static void teleportPlayerToAreaFailedToLeaveLocation (ServerPlayerEntity player, Area area) {
+
+        AreaPermissions permissions = area.getPermissions();
+        if (!permissions.getLeaveTeleportLocation().equalsIgnoreCase("x,y,z")) {
+
+            int tpX = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[0]);
+            int tpY = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[1]);
+            int tpZ = Integer.parseInt(permissions.getLeaveTeleportLocation().split(",")[2]);
+            player.setPositionAndUpdate(tpX, tpY, tpZ);
+            if (!permissions.getLeaveMessage().equals("")) {
+
+                player.sendMessage(FancyText.getFormattedText(permissions.getLeaveMessage()), player.getUniqueID());
+
+            }
+
+        }
+
+    }
+
+    public static void removePlayerFromArea (ServerPlayerEntity player, Area area) {
+
+        Region region = RegionHandler.getRegionAtPlayer(player);
+        playersInArea.get(region).get(area).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+    }
+
+    public static void addPlayerToArea (ServerPlayerEntity player, Region region, Area area) {
+
+        List<UUID> uuids = new ArrayList<>();
+        Map<Area, List<UUID>> map = new HashMap<>();
+        if (playersInArea.containsKey(region)) {
+
+            map = playersInArea.get(region);
+            if (map.containsKey(area)) uuids = map.get(area);
+
+        }
+        uuids.add(player.getUniqueID());
+        map.put(area, uuids);
+        playersInArea.put(region, map);
+
+        STitlePacket title = new STitlePacket(STitlePacket.Type.TITLE,
+                FancyText.getFormattedText(area.getEnterMessage().replace("%plainName%", area.getPlainName())),
+                10, 10, 10);
+        player.connection.sendPacket(title);
+
+    }
 
     public static List<Area> getAreasAtPlayer (ServerPlayerEntity player) {
 
@@ -60,6 +216,12 @@ public class AreaHandler {
 
     }
 
+    public static List<Area> getSortedAreas (ServerPlayerEntity player) {
+
+        return getSortedAreas(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), player.world);
+
+    }
+
     public static Area getHighestPriorityArea (int x, int y, int z, World world) {
 
         List<Area> areas = getFromLocation(x, y, z, world);
@@ -71,7 +233,42 @@ public class AreaHandler {
         }
         List<Integer> priorities = new ArrayList<>(priorityMap.keySet());
         Collections.sort(priorities);
-        return priorityMap.get(priorities.get(priorities.size() - 1));
+        return priorityMap.get(priorities.get(0));
+
+    }
+
+    public static Area getHighestPriorityArea (ServerPlayerEntity player) {
+
+        return getHighestPriorityArea(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), player.world);
+
+    }
+
+    public static Area getLowestPriorityArea (int x, int y, int z, World world) {
+
+        try {
+
+            List<Area> areas = getFromLocation(x, y, z, world);
+            Map<Integer, Area> priorityMap = new HashMap<>();
+            for (Area a : areas) {
+
+                priorityMap.put(a.getPriority(), a);
+
+            }
+            List<Integer> priorities = new ArrayList<>(priorityMap.keySet());
+            Collections.sort(priorities);
+            return priorityMap.get(priorities.get(priorities.size() - 1));
+
+        } catch (IndexOutOfBoundsException er) {
+
+            return null;
+
+        }
+
+    }
+
+    public static Area getLowestPriorityArea (ServerPlayerEntity player) {
+
+        return getLowestPriorityArea(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), player.world);
 
     }
 
@@ -141,6 +338,31 @@ public class AreaHandler {
         }
 
         return areas;
+
+    }
+
+    public static boolean areaHasPlayer (Region region, Area area, UUID uuid) {
+
+        boolean has = false;
+        if (playersInArea.containsKey(region)) {
+
+            Map<Area, List<UUID>> players = playersInArea.get(region);
+            if (players.containsKey(area)) {
+
+                List<UUID> uuids = players.get(area);
+                has = uuids.contains(uuid);
+
+            }
+
+        }
+
+        return has;
+
+    }
+
+    public static boolean areaHasPlayer (Region region, Area area, ServerPlayerEntity player) {
+
+        return areaHasPlayer(region, area, player.getUniqueID());
 
     }
 
