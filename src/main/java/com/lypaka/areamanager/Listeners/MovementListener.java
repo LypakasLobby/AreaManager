@@ -193,41 +193,45 @@ public class MovementListener {
 
                                         if (player.isInWater()) {
 
-                                            if (player.getRidingEntity() == null) {
+                                            if (!player.isCreative() && !player.isSpectator()) {
 
-                                                if (area.killsForSwimming()) {
+                                                if (player.getRidingEntity() == null) {
 
-                                                    int counter = 0;
-                                                    if (swimCounter.containsKey(player.getUniqueID())) {
+                                                    if (area.killsForSwimming()) {
 
-                                                        counter = swimCounter.get(player.getUniqueID());
+                                                        int counter = 0;
+                                                        if (swimCounter.containsKey(player.getUniqueID())) {
+
+                                                            counter = swimCounter.get(player.getUniqueID());
+
+                                                        }
+                                                        counter++;
+                                                        if (counter >= 5) {
+
+                                                            player.onKillCommand();
+                                                            swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+                                                        } else {
+
+                                                            swimCounter.put(player.getUniqueID(), counter);
+
+                                                        }
+
+                                                    } else if (area.teleportsForSwimming()) {
+
+                                                        PlayerLocation playerLocation = PlayerDataHandler.playerLocationMap.get(player.getUniqueID());
+                                                        int x = playerLocation.getLastLandLocation()[0];
+                                                        int y = playerLocation.getLastLandLocation()[1];
+                                                        int z = playerLocation.getLastLandLocation()[2];
+                                                        player.setPosition(x, y, z);
 
                                                     }
-                                                    counter++;
-                                                    if (counter >= 5) {
 
-                                                        player.onKillCommand();
-                                                        swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+                                                } else {
 
-                                                    } else {
-
-                                                        swimCounter.put(player.getUniqueID(), counter);
-
-                                                    }
-
-                                                } else if (area.teleportsForSwimming()) {
-
-                                                    PlayerLocation playerLocation = PlayerDataHandler.playerLocationMap.get(player.getUniqueID());
-                                                    int x = playerLocation.getLastLandLocation()[0];
-                                                    int y = playerLocation.getLastLandLocation()[1];
-                                                    int z = playerLocation.getLastLandLocation()[2];
-                                                    player.setPosition(x, y, z);
+                                                    swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
 
                                                 }
-
-                                            } else {
-
-                                                swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
 
                                             }
 
