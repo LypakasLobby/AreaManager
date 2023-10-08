@@ -8,7 +8,6 @@ import com.lypaka.areamanager.API.RegionEvents.RegionLeaveEvent;
 import com.lypaka.areamanager.API.RegionEvents.RegionPermissionsEvent;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.Areas.Area;
-import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.Areas.AreaPermissions;
 import com.lypaka.areamanager.ConfigGetters;
 import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
@@ -124,16 +123,12 @@ public class RegionHandler {
 
     public static void removePlayerFromRegion (ServerPlayerEntity player, Region region) {
 
-        String name = "None";
-        if (region != null) name = region.getName();
         playersInRegion.get(region).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
 
     }
 
     public static void addPlayerToRegion (ServerPlayerEntity player, Region region) {
 
-        String name = "None";
-        if (region != null) name = region.getName();
         playersLastKnownRegion.put(player.getUniqueID(), region);
         List<UUID> uuids = new ArrayList<>();
         if (playersInRegion.containsKey(region)) uuids = playersInRegion.get(region);

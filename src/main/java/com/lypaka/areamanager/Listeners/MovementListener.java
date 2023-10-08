@@ -6,6 +6,8 @@ import com.lypaka.areamanager.Areas.AreaHandler;
 import com.lypaka.areamanager.Regions.Region;
 import com.lypaka.areamanager.Regions.RegionHandler;
 import com.lypaka.lypakautils.API.PlayerMovementEvent;
+import com.lypaka.lypakautils.PlayerLocationData.PlayerDataHandler;
+import com.lypaka.lypakautils.PlayerLocationData.PlayerLocation;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -187,7 +189,57 @@ public class MovementListener {
 
                                 for (Area area : playerAreas) {
 
-                                    if (a.getName().equalsIgnoreCase(area.getName())) return; // player is moving in the same area, not changing areas
+                                    if (a.getName().equalsIgnoreCase(area.getName())) { // player is moving in the same area, not changing areas
+
+                                        if (player.isInWater()) {
+
+                                            if (player.getRidingEntity() == null) {
+
+                                                if (area.killsForSwimming()) {
+
+                                                    int counter = 0;
+                                                    if (swimCounter.containsKey(player.getUniqueID())) {
+
+                                                        counter = swimCounter.get(player.getUniqueID());
+
+                                                    }
+                                                    counter++;
+                                                    if (counter >= 5) {
+
+                                                        player.onKillCommand();
+                                                        swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+                                                    } else {
+
+                                                        swimCounter.put(player.getUniqueID(), counter);
+
+                                                    }
+
+                                                } else if (area.teleportsForSwimming()) {
+
+                                                    PlayerLocation playerLocation = PlayerDataHandler.playerLocationMap.get(player.getUniqueID());
+                                                    int x = playerLocation.getLastLandLocation()[0];
+                                                    int y = playerLocation.getLastLandLocation()[1];
+                                                    int z = playerLocation.getLastLandLocation()[2];
+                                                    player.setPosition(x, y, z);
+
+                                                }
+
+                                            } else {
+
+                                                swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+                                            }
+
+                                        } else {
+
+                                            swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+                                        }
+
+                                        return;
+
+                                    }
 
                                 }
 
