@@ -3,6 +3,7 @@ package com.lypaka.areamanager.Areas;
 import com.lypaka.areamanager.API.AreaEvents.AreaEnterEvent;
 import com.lypaka.areamanager.API.AreaEvents.AreaLeaveEvent;
 import com.lypaka.areamanager.API.AreaEvents.AreaPermissionsEvent;
+import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.Regions.Region;
 import com.lypaka.areamanager.Regions.RegionHandler;
 import com.lypaka.lypakautils.FancyText;
@@ -117,6 +118,10 @@ public class AreaHandler {
 
             }
 
+        } else {
+
+            AreaManager.logger.warn("Attempted to teleport player to \"failed to enter\" area location, but that value has not been set for Area: " + area.getName() + "!");
+
         }
 
     }
@@ -135,6 +140,10 @@ public class AreaHandler {
                 player.sendMessage(FancyText.getFormattedText(permissions.getLeaveMessage()), player.getUniqueID());
 
             }
+
+        } else {
+
+            AreaManager.logger.warn("Attempted to teleport player to \"failed to leave\" area location, but that value has not been set for Area: " + area.getName() + "!");
 
         }
 

@@ -46,6 +46,10 @@ public class RegionHandler {
 
             }
 
+        } else {
+
+            AreaManager.logger.warn("Attempted to teleport player to \"failed to leave\" region location, but that value has not been set for Region: " + region.getName() + "!");
+
         }
 
     }
@@ -64,6 +68,10 @@ public class RegionHandler {
                 player.sendMessage(FancyText.getFormattedText(permissions.getEnterMessage()), player.getUniqueID());
 
             }
+
+        } else {
+
+            AreaManager.logger.warn("Attempted to teleport player to \"failed to enter\" region location, but that value has not been set for Region: " + region.getName() + "!");
 
         }
 
