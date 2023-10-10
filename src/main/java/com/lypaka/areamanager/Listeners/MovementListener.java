@@ -78,10 +78,10 @@ public class MovementListener {
 
                     if (RegionHandler.canPlayerLeaveRegion(player, lastKnownRegion)) {
 
-                        if (AreaHandler.playersInArea.containsKey(lastKnownRegion)) {
+                        if (AreaHandler.playersInArea.containsKey(lastKnownRegion.getName())) {
 
                             List<Area> playerAreas = new ArrayList<>();
-                            Map<Area, List<UUID>> map = AreaHandler.playersInArea.get(lastKnownRegion);
+                            Map<Area, List<UUID>> map = AreaHandler.playersInArea.get(lastKnownRegion.getName());
                             for (Map.Entry<Area, List<UUID>> entry : map.entrySet()) {
 
                                 if (entry.getValue().contains(player.getUniqueID())) playerAreas.add(entry.getKey());
@@ -177,9 +177,9 @@ public class MovementListener {
                     List<Area> sortedAreas = AreaHandler.getSortedAreas(player);
                     try {
 
-                        if (AreaHandler.playersInArea.containsKey(lastKnownRegion)) {
+                        if (AreaHandler.playersInArea.containsKey(lastKnownRegion.getName())) {
 
-                            Map<Area, List<UUID>> map = AreaHandler.playersInArea.get(lastKnownRegion);
+                            Map<Area, List<UUID>> map = AreaHandler.playersInArea.get(lastKnownRegion.getName());
                             for (Map.Entry<Area, List<UUID>> entry : map.entrySet()) {
 
                                 if (entry.getValue().contains(player.getUniqueID())) playerAreas.add(entry.getKey());

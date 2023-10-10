@@ -17,7 +17,7 @@ import java.util.*;
 
 public class AreaHandler {
 
-    public static Map<Region, Map<Area, List<UUID>>> playersInArea = new HashMap<>();
+    public static Map<String, Map<Area, List<UUID>>> playersInArea = new HashMap<>();
 
     public static boolean canPlayerEnterArea (ServerPlayerEntity player, Area area) {
 
@@ -143,23 +143,33 @@ public class AreaHandler {
     public static void removePlayerFromArea (ServerPlayerEntity player, Area area) {
 
         Region region = RegionHandler.getRegionAtPlayer(player);
-        playersInArea.get(region).get(area).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
+        playersInArea.get(region.getName()).get(area).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
 
     }
 
     public static void addPlayerToArea (ServerPlayerEntity player, Region region, Area area) {
 
+        String regionName;
+        if (region == null) {
+
+            regionName = "None";
+
+        } else {
+
+            regionName = region.getName();
+
+        }
         List<UUID> uuids = new ArrayList<>();
         Map<Area, List<UUID>> map = new HashMap<>();
-        if (playersInArea.containsKey(region)) {
+        if (playersInArea.containsKey(regionName)) {
 
-            map = playersInArea.get(region);
+            map = playersInArea.get(regionName);
             if (map.containsKey(area)) uuids = map.get(area);
 
         }
         uuids.add(player.getUniqueID());
         map.put(area, uuids);
-        playersInArea.put(region, map);
+        playersInArea.put(regionName, map);
 
         STitlePacket title = new STitlePacket(STitlePacket.Type.TITLE,
                 FancyText.getFormattedText(area.getEnterMessage().replace("%plainName%", area.getPlainName())),
@@ -344,9 +354,9 @@ public class AreaHandler {
     public static boolean areaHasPlayer (Region region, Area area, UUID uuid) {
 
         boolean has = false;
-        if (playersInArea.containsKey(region)) {
+        if (playersInArea.containsKey(region.getName())) {
 
-            Map<Area, List<UUID>> players = playersInArea.get(region);
+            Map<Area, List<UUID>> players = playersInArea.get(region.getName());
             if (players.containsKey(area)) {
 
                 List<UUID> uuids = players.get(area);
