@@ -3,11 +3,14 @@ package com.lypaka.areamanager.Areas;
 import com.lypaka.areamanager.API.AreaEvents.AreaEnterEvent;
 import com.lypaka.areamanager.API.AreaEvents.AreaLeaveEvent;
 import com.lypaka.areamanager.API.AreaEvents.AreaPermissionsEvent;
+import com.lypaka.areamanager.API.AreaEvents.AreaSwimEvent;
 import com.lypaka.areamanager.AreaManager;
 import com.lypaka.areamanager.Regions.Region;
 import com.lypaka.areamanager.Regions.RegionHandler;
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
+import com.lypaka.lypakautils.PlayerLocationData.PlayerDataHandler;
+import com.lypaka.lypakautils.PlayerLocationData.PlayerLocation;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.world.World;
@@ -19,6 +22,71 @@ import java.util.*;
 public class AreaHandler {
 
     public static Map<String, Map<Area, List<UUID>>> playersInArea = new HashMap<>();
+    private static final Map<UUID, Integer> swimCounter = new HashMap<>();
+
+    public static void runSwimCode (ServerPlayerEntity player, Area area) {
+
+        if (player.isInWater()) {
+
+            if (player.isCreative() || player.isSpectator()) return;
+
+            if (player.getRidingEntity() == null) {
+
+                if (area.killsForSwimming()) {
+
+                    AreaSwimEvent.Kill killEvent = new AreaSwimEvent.Kill(player, area);
+                    MinecraftForge.EVENT_BUS.post(killEvent);
+                    if (!killEvent.isCanceled()) {
+
+                        int counter = 0;
+                        if (swimCounter.containsKey(player.getUniqueID())) {
+
+                            counter = swimCounter.get(player.getUniqueID());
+
+                        }
+                        counter++;
+                        if (counter >= 5) {
+
+                            player.onKillCommand();
+                            swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+                        } else {
+
+                            swimCounter.put(player.getUniqueID(), counter);
+
+                        }
+
+                    }
+
+                } else if (area.teleportsForSwimming()) {
+
+                    AreaSwimEvent.Teleport teleportEvent = new AreaSwimEvent.Teleport(player, area);
+                    MinecraftForge.EVENT_BUS.post(teleportEvent);
+                    if (!teleportEvent.isCanceled()) {
+
+                        PlayerLocation playerLocation = PlayerDataHandler.playerLocationMap.get(player.getUniqueID());
+                        int x = playerLocation.getLastLandLocation()[0];
+                        int y = playerLocation.getLastLandLocation()[1];
+                        int z = playerLocation.getLastLandLocation()[2];
+                        player.setPosition(x, y, z);
+
+                    }
+
+                }
+
+            } else {
+
+                swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+            }
+
+        } else {
+
+            swimCounter.entrySet().removeIf(e -> e.getKey().toString().equalsIgnoreCase(player.getUniqueID().toString()));
+
+        }
+
+    }
 
     public static boolean canPlayerEnterArea (ServerPlayerEntity player, Area area) {
 
