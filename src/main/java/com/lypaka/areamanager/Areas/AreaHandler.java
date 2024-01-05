@@ -11,6 +11,7 @@ import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
 import com.lypaka.lypakautils.PlayerLocationData.PlayerDataHandler;
 import com.lypaka.lypakautils.PlayerLocationData.PlayerLocation;
+import com.lypaka.lypakautils.WorldStuff.WorldMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.world.World;
@@ -362,7 +363,7 @@ public class AreaHandler {
     public static List<Area> getFromLocation (int x, int y, int z, World world) {
 
         List<Area> areas = new ArrayList<>();
-        String currentWorld = ((ServerWorldInfo) world.getWorldInfo()).getWorldName();
+        String currentWorld = WorldMap.getWorldName(world);
         for (Map.Entry<String, Region> regionMap : RegionHandler.regionMap.entrySet()) {
 
             Region r = regionMap.getValue();
