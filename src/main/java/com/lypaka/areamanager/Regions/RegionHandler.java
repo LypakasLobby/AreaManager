@@ -14,6 +14,7 @@ import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
 import com.lypaka.lypakautils.ConfigurationLoaders.ConfigUtils;
 import com.lypaka.lypakautils.FancyText;
 import com.lypaka.lypakautils.MiscHandlers.PermissionHandler;
+import com.lypaka.lypakautils.WorldStuff.WorldMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.storage.ServerWorldInfo;
 import net.minecraftforge.common.MinecraftForge;
@@ -290,7 +291,7 @@ public class RegionHandler {
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
         int z = player.getPosition().getZ();
-        String currentWorld = ((ServerWorldInfo) player.world.getWorldInfo()).getWorldName();
+        String currentWorld = WorldMap.getWorldName(player);
 
         for (Map.Entry<String, Region> regionMap : regionMap.entrySet()) {
 
