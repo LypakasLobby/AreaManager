@@ -221,6 +221,16 @@ public class AreaHandler {
     public static void removePlayerFromArea (ServerPlayerEntity player, Area area) {
 
         Region region = RegionHandler.getRegionAtPlayer(player);
+        if (region == null) {
+
+            return;
+
+        }
+        if (area == null) {
+
+            return;
+
+        }
         playersInArea.get(region.getName()).get(area).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
 
     }
