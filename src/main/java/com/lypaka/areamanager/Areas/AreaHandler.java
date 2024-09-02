@@ -187,10 +187,6 @@ public class AreaHandler {
 
             }
 
-        } else {
-
-            AreaManager.logger.warn("Attempted to teleport player to \"failed to enter\" area location, but that value has not been set for Area: " + area.getName() + "!");
-
         }
 
     }
@@ -209,10 +205,6 @@ public class AreaHandler {
                 player.sendMessage(FancyText.getFormattedText(permissions.getLeaveMessage()), player.getUniqueID());
 
             }
-
-        } else {
-
-            AreaManager.logger.warn("Attempted to teleport player to \"failed to leave\" area location, but that value has not been set for Area: " + area.getName() + "!");
 
         }
 

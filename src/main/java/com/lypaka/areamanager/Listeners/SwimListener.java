@@ -18,11 +18,10 @@ import java.util.UUID;
 /**
  * Used for the swim stuff, for teleportation/killing in areas and stuff
  */
-@Mod.EventBusSubscriber(modid = AreaManager.MOD_ID)
 public class SwimListener {
 
     @SubscribeEvent
-    public static void onSwim (PlayerMovementEvent.Swim event) {
+    public void onSwim (PlayerMovementEvent.Swim event) {
 
         ServerPlayerEntity player = event.getPlayer();
         Region playerRegion = RegionHandler.getRegionAtPlayer(player);

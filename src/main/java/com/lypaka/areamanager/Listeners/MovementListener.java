@@ -12,11 +12,10 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = AreaManager.MOD_ID)
 public class MovementListener {
 
     @SubscribeEvent
-    public static void onPlayerLandMovement (PlayerMovementEvent.Land event) {
+    public void onPlayerLandMovement (PlayerMovementEvent.Land event) {
 
         ServerPlayerEntity player = event.getPlayer();
         Region playerRegion = RegionHandler.getRegionAtPlayer(player);
