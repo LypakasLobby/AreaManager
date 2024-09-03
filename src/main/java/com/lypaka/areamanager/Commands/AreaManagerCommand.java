@@ -17,7 +17,10 @@ public class AreaManagerCommand {
     @SubscribeEvent
     public static void onCommandRegistration (RegisterCommandsEvent event) {
 
+        new CreateAreaCommand(event.getDispatcher());
+        new CreateRegionCommand(event.getDispatcher());
         new ReloadCommand(event.getDispatcher());
+        new WandCommand(event.getDispatcher());
         new WorldCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());

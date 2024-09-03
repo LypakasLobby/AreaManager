@@ -18,6 +18,7 @@ public class ServerLoadListener {
 
         MinecraftForge.EVENT_BUS.register(new MovementListener());
         MinecraftForge.EVENT_BUS.register(new SwimListener());
+        MinecraftForge.EVENT_BUS.register(new WandListener());
 
         RegionHandler.loadRegions();
 

@@ -209,7 +209,7 @@ public class RegionHandler {
 
             }
 
-            Region region = new Region(regionName, displayName, maxX, maxY, maxZ, minX, minY, minZ, worldName, regionPermissions, areas);
+            Region region = new Region(regionName, displayName, maxX, maxY, maxZ, minX, minY, minZ, worldName, regionPermissions, areas, bcm);
             region.create();
             regionAreasMap.put(region, areas);
             regionMap.put(regionName, region);

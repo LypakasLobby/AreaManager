@@ -1,6 +1,7 @@
 package com.lypaka.areamanager.Regions;
 
 import com.lypaka.areamanager.Areas.Area;
+import com.lypaka.lypakautils.ConfigurationLoaders.BasicConfigManager;
 
 import java.util.List;
 
@@ -17,8 +18,9 @@ public class Region {
     private final String worldName;
     private final RegionPermissions permissions;
     private final List<Area> areas;
+    private final BasicConfigManager bcm;
 
-    public Region (String name, String displayName, int maxX, int maxY, int maxZ, int minX, int minY, int minZ, String worldName, RegionPermissions permissions, List<Area> areas) {
+    public Region (String name, String displayName, int maxX, int maxY, int maxZ, int minX, int minY, int minZ, String worldName, RegionPermissions permissions, List<Area> areas, BasicConfigManager bcm) {
 
         this.name = name;
         this.displayName = displayName;
@@ -31,6 +33,7 @@ public class Region {
         this.worldName = worldName;
         this.permissions = permissions;
         this.areas = areas;
+        this.bcm = bcm;
 
     }
 
@@ -103,6 +106,12 @@ public class Region {
     public List<Area> getAreas() {
 
         return this.areas;
+
+    }
+
+    public BasicConfigManager getConfigManager() {
+
+        return this.bcm;
 
     }
 
