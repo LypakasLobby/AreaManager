@@ -6,6 +6,7 @@ import com.lypaka.lypakautils.MiscHandlers.ItemStackBuilder;
 import net.minecraft.item.ItemStack;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigGetters {
@@ -16,7 +17,7 @@ public class ConfigGetters {
 
     public static void load() throws ObjectMappingException {
 
-        regionNames = AreaManager.configManager.getConfigNode(0, "Regions").getList(TypeToken.of(String.class));
+        regionNames = new ArrayList<>(AreaManager.configManager.getConfigNode(0, "Regions").getList(TypeToken.of(String.class)));
         if (AreaManager.configManager.getConfigNode(0, "Wand", "Display-Name").isVirtual()) {
 
             wandDisplayName = "&4Lazy Wand";
