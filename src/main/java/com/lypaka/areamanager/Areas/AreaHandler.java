@@ -223,7 +223,33 @@ public class AreaHandler {
             return;
 
         }
-        playersInArea.get(region.getName()).get(area).removeIf(e -> e.toString().equalsIgnoreCase(player.getUniqueID().toString()));
+        playersInArea.get(region.getName()).get(area).removeIf(e -> {
+
+            if (e.toString().equalsIgnoreCase(player.getUniqueID().toString())) {
+
+                if (!area.getLeaveTitle().equalsIgnoreCase("")) {
+
+                    STitlePacket title = new STitlePacket(STitlePacket.Type.TITLE,
+                            FancyText.getFormattedText(area.getLeaveTitle().replace("%plainName%", area.getPlainName())),
+                            10, 10, 10);
+                    player.connection.sendPacket(title);
+
+                }
+                if (!area.getLeaveSubtitle().equalsIgnoreCase("")) {
+
+                    STitlePacket subtitle = new STitlePacket(STitlePacket.Type.SUBTITLE,
+                            FancyText.getFormattedText(area.getLeaveSubtitle().replace("%plainName%", area.getPlainName())),
+                            10, 10, 10);
+                    player.connection.sendPacket(subtitle);
+
+                }
+                return true;
+
+            }
+
+            return false;
+
+        });
 
     }
 
@@ -251,10 +277,22 @@ public class AreaHandler {
         map.put(area, uuids);
         playersInArea.put(regionName, map);
 
-        STitlePacket title = new STitlePacket(STitlePacket.Type.TITLE,
-                FancyText.getFormattedText(area.getEnterMessage().replace("%plainName%", area.getPlainName())),
-                10, 10, 10);
-        player.connection.sendPacket(title);
+        if (!area.getEnterTitle().equalsIgnoreCase("")) {
+
+            STitlePacket title = new STitlePacket(STitlePacket.Type.TITLE,
+                    FancyText.getFormattedText(area.getEnterTitle().replace("%plainName%", area.getPlainName())),
+                    10, 10, 10);
+            player.connection.sendPacket(title);
+
+        }
+        if (!area.getEnterSubtitle().equalsIgnoreCase("")) {
+
+            STitlePacket title = new STitlePacket(STitlePacket.Type.SUBTITLE,
+                    FancyText.getFormattedText(area.getEnterSubtitle().replace("%plainName%", area.getPlainName())),
+                    10, 10, 10);
+            player.connection.sendPacket(title);
+
+        }
 
     }
 

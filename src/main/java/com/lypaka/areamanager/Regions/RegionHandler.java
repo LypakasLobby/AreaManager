@@ -184,8 +184,30 @@ public class RegionHandler {
                 int areaMinY = areaBCM.getConfigNode(0, "Area-Location", "Min-Y").getInt();
                 int areaMinZ = areaBCM.getConfigNode(0, "Area-Location", "Min-Z").getInt();
                 String areaWorldName = areaBCM.getConfigNode(0, "Area-Location", "World-Name").getString();
-                String enterMessage = areaBCM.getConfigNode(0, "Area-Messages", "Enter").getString();
-                String leaveMessage = areaBCM.getConfigNode(0, "Area-Messages", "Leave").getString();
+                //String enterMessage = areaBCM.getConfigNode(0, "Area-Messages", "Enter").getString();
+                //String leaveMessage = areaBCM.getConfigNode(0, "Area-Messages", "Leave").getString();
+                String enterTitle = "&eEntering: &a&l%plainName%";
+                String enterSubtitle = "";
+                String leaveTitle = "&eLeaving: &a&l%plainName%";
+                String leaveSubtitle = "";
+                if (areaBCM.getConfigNode(0, "Area-Messages", "Enter", "Title").isVirtual()) {
+
+                    areaBCM.getConfigNode(0, "Area-Messages", "Enter").setValue(null);
+                    areaBCM.getConfigNode(0, "Area-Messages", "Enter", "Title").setValue(enterTitle);
+                    areaBCM.getConfigNode(0, "Area-Messages", "Enter", "Subtitle").setValue(enterSubtitle);
+                    areaBCM.getConfigNode(0, "Area-Messages", "Leave").setValue(null);
+                    areaBCM.getConfigNode(0, "Area-Messages", "Leave", "Title").setValue(leaveTitle);
+                    areaBCM.getConfigNode(0, "Area-Messages", "Leave", "Subtitle").setValue(leaveSubtitle);
+                    areaBCM.save();
+
+                } else {
+
+                    enterTitle = areaBCM.getConfigNode(0, "Area-Messages", "Enter", "Title").getString();
+                    enterSubtitle = areaBCM.getConfigNode(0, "Area-Messages", "Enter", "Subtitle").getString();
+                    leaveTitle = areaBCM.getConfigNode(0, "Area-Messages", "Leave", "Title").getString();
+                    leaveSubtitle = areaBCM.getConfigNode(0, "Area-Messages", "Leave", "Subtitle").getString();
+
+                }
                 String plainName = areaBCM.getConfigNode(0, "Area-Plain-Name").getString();
                 String areaEnterPermissionMessage = areaBCM.getConfigNode(0, "Permissions", "Enter", "Message").getString();
                 List<String> areaEnterPermissions = areaBCM.getConfigNode(0, "Permissions", "Enter", "Permissions").getList(TypeToken.of(String.class));
@@ -202,7 +224,7 @@ public class RegionHandler {
                 int radius = areaBCM.getConfigNode(0, "Radius").getInt();
                 int underground = areaBCM.getConfigNode(0, "Underground").getInt();
 
-                Area a = new Area(area, areaDisplayName, areaMaxX, areaMaxY, areaMaxZ, areaMinX, areaMinY, areaMinZ, areaWorldName, enterMessage, leaveMessage, plainName, killsForSwimming,
+                Area a = new Area(area, areaDisplayName, areaMaxX, areaMaxY, areaMaxZ, areaMinX, areaMinY, areaMinZ, areaWorldName, enterTitle, enterSubtitle, leaveTitle, leaveSubtitle, plainName, killsForSwimming,
                         teleportsForSwimming, permissions, priority, radius, underground);
 
                 areas.add(a);

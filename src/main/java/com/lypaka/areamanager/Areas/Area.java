@@ -11,8 +11,10 @@ public class Area {
     private final int minY;
     private final int minZ;
     private final String worldName;
-    private final String enterMessage;
-    private final String leaveMessage;
+    private final String enterTitle;
+    private final String enterSubtitle;
+    private final String leaveTitle;
+    private final String leaveSubtitle;
     private final String plainName;
     private final boolean killForSwimming;
     private final boolean teleportForSwimming;
@@ -21,8 +23,8 @@ public class Area {
     private final int radius;
     private final int underground;
 
-    public Area (String name, String displayName, int maxX, int maxY, int maxZ, int minX, int minY, int minZ, String worldName, String enterMessage, String leaveMessage,
-                 String plainName, boolean killForSwimming, boolean teleportForSwimming, AreaPermissions permissions, int priority, int radius, int underground) {
+    public Area (String name, String displayName, int maxX, int maxY, int maxZ, int minX, int minY, int minZ, String worldName, String enterTitle, String enterSubtitle, String leaveTitle,
+                 String leaveSubtitle, String plainName, boolean killForSwimming, boolean teleportForSwimming, AreaPermissions permissions, int priority, int radius, int underground) {
 
         this.name = name;
         this.displayName = displayName;
@@ -33,8 +35,10 @@ public class Area {
         this.minY = minY;
         this.minZ = minZ;
         this.worldName = worldName;
-        this.enterMessage = enterMessage;
-        this.leaveMessage = leaveMessage;
+        this.enterTitle = enterTitle;
+        this.enterSubtitle = enterSubtitle;
+        this.leaveTitle = leaveTitle;
+        this.leaveSubtitle = leaveSubtitle;
         this.plainName = plainName;
         this.killForSwimming = killForSwimming;
         this.teleportForSwimming = teleportForSwimming;
@@ -99,15 +103,27 @@ public class Area {
 
     }
 
-    public String getEnterMessage() {
+    public String getEnterTitle() {
 
-        return this.enterMessage;
+        return this.enterTitle;
 
     }
 
-    public String getLeaveMessage() {
+    public String getEnterSubtitle() {
 
-        return this.leaveMessage;
+        return this.enterSubtitle;
+
+    }
+
+    public String getLeaveTitle() {
+
+        return this.leaveTitle;
+
+    }
+
+    public String getLeaveSubtitle() {
+
+        return this.leaveSubtitle;
 
     }
 
